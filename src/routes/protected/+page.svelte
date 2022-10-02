@@ -1,0 +1,82 @@
+<script lang="ts">
+	import { sendForm } from '$lib/api';
+	import { friendsStore } from '$lib/store';
+	import Header from '$lib/components/Header.svelte';
+
+	export let data: {
+		friends: { username: string }[];
+		friendRequests: { username: string }[];
+	};
+
+	// Update store
+	friendsStore.set(data.friends.map((f) => ({ ...f, online: false })));
+
+	let friends = data.friends as { username: string }[];
+	let friendRequests = data.friendRequests as { username: string }[];
+
+	const addFriend = async (e: Event) => {
+		const res = await sendForm(e.target as HTMLFormElement);
+
+		if (res.success) {
+			// Add new friend to friend's list
+			const newFriend = res.data.friend;
+			friendRequests = friendRequests.filter((fr) => fr.username !== newFriend.username);
+			friends = [...friends, newFriend];
+		}
+
+		if (res.error) {
+			console.error(res.error);
+		}
+	};
+</script>
+
+<Header>
+	<div class="flex justify-end" slot="right">
+		<a href="/settings" class="text-gray-700">Settings</a>
+	</div>
+</Header>
+
+<section class="pt-8">
+	<div class="container">
+		<h1 class="text-3xl">Friends</h1>
+	</div>
+	<div class="divide-y">
+		{#if friends.length === 0}
+			<div class="container p-4">
+				<p class="mb-2">You have no friends added. 🥲</p>
+				<p><a class="text-gray-500" href="/settings">Click here to add a friend!</a></p>
+			</div>
+		{/if}
+
+		{#each friends as friend}
+			<a href={`/chat/${friend.username}`} class="block py-4 container hover:bg-gray-100">
+				<p class="text-gray-700">{friend.username}</p>
+				<p class="text-gray-400">Click to message</p>
+			</a>
+		{/each}
+	</div>
+</section>
+
+{#if friendRequests.length > 0}
+	<section class="py-4">
+		<div class="container">
+			<h1 class="text-3xl">Friend Requests</h1>
+		</div>
+		<div class="divide-y">
+			{#each friendRequests as request}
+				<div class="py-4 container hover:bg-gray-100 flex justify-between items-center">
+					<div>
+						<p class="text-gray-700">{request.username}</p>
+						<p class="text-gray-400">Added you</p>
+					</div>
+					<div class="flex gap-4">
+						<form action="/friends" method="post" on:submit|preventDefault={addFriend}>
+							<input type="hidden" name="friend" value={request.username} />
+							<button class="bg-gray-200 rounded py-2 px-4">Add back</button>
+						</form>
+					</div>
+				</div>
+			{/each}
+		</div>
+	</section>
+{/if}

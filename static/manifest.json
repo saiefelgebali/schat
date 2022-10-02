@@ -1,0 +1,17 @@
+{
+	"short_name": "Safchat",
+	"name": "SChat",
+	"start_url": "/",
+	"icons": [
+		{
+			"src": "icon256.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		}
+	],
+	"background_color": "#f9fafb",
+	"display": "standalone",
+	"scope": "/",
+	"theme_color": "#f9fafb",
+	"description": "Establish a direct line of communication between two people."
+}
