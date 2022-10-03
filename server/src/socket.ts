@@ -1,4 +1,4 @@
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { SocketMessage, SocketOnline } from '../../shared/interface.js';
 import { ConsoleColor, log } from './log.js';
 import db from '../../shared/db.js';
@@ -8,7 +8,7 @@ export const friendsOfUserRoom = (username: string) => `friends-of-${username}`;
 
 export const configureSocket = (io: Server) => {
 	// Keep track of who is online
-	const userSockets = {};
+	const userSockets: { [username: string]: Socket } = {};
 
 	io.on('connection', (socket) => {
 		let username = '';
@@ -33,6 +33,9 @@ export const configureSocket = (io: Server) => {
 			user.friends.forEach((friend) => {
 				// Add to friends' groups
 				socket.join(friendsOfUserRoom(friend.username));
+
+				// Make sure friend is in my room
+				userSockets[friend.username]?.join(friendsOfUserRoom(username));
 
 				// Update users already connected
 				socket.emit('online', {

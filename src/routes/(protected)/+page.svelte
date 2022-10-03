@@ -39,7 +39,7 @@
 
 <section class="pt-8">
 	<div class="container">
-		<h1 class="text-3xl">Friends</h1>
+		<h1 class="text-3xl">Friends ({$friendsStore.length})</h1>
 	</div>
 	<div class="divide-y">
 		{#if $friendsStore.length === 0}
@@ -55,11 +55,15 @@
 					<StatusIndicator online={friend.online} />
 					<div>
 						<p class="text-gray-700">{friend.username}</p>
-						{#if friend.typing}
-							<p class="text-gray-400">Typing...</p>
-						{:else}
-							<p class="text-gray-400">Click to message</p>
-						{/if}
+						<p class="text-gray-400">
+							{#if friend.typing}
+								Typing...
+							{:else if friend.messages.length > 0}
+								{friend.messages[friend.messages.length - 1].text}
+							{:else}
+								Click to message
+							{/if}
+						</p>
 					</div>
 				</div>
 			</a>

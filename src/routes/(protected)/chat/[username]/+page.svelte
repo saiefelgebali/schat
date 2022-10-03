@@ -5,6 +5,7 @@
 	import MessageBox from './MessageBox.svelte';
 	import { friendsStore } from '$lib/store';
 	import type { Friend, ChatMessage } from '$shared/interface';
+	import { onMount } from 'svelte';
 
 	// State
 	export let data: {
@@ -13,7 +14,14 @@
 		isFriend: boolean;
 	};
 
-	$: friend = $friendsStore.find((f) => f.username === data.friend.username)!;
+	$: storedFriend = $friendsStore.find((f) => f.username === data.friend.username);
+	$: friend = storedFriend || data.friend;
+
+	onMount(() => {
+		if (!storedFriend) {
+			$friendsStore.push(data.friend);
+		}
+	});
 
 	let draft: ChatMessage = {
 		text: '',

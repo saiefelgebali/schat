@@ -16,15 +16,6 @@
 		friendRequests: { username: string }[];
 	};
 
-	// Add friends to store
-	friendsStore.update((store) => {
-		data.friends.forEach((friend) => {
-			if (store.find((f) => f.username === friend.username)) return;
-			store.push({ ...friend });
-		});
-		return store;
-	});
-
 	function updateFriend(username: string, handler: (friend: Friend) => void) {
 		friendsStore.update((store) => {
 			let storedFriend = store.find((f) => f.username === username);
@@ -35,6 +26,15 @@
 	}
 
 	onMount(() => {
+		// Add friends to store
+		friendsStore.update((store) => {
+			data.friends.forEach((friend) => {
+				if (store.find((f) => f.username === friend.username)) return;
+				store.push({ ...friend });
+			});
+			return store;
+		});
+
 		// Remove existing socket
 		if ($socket) {
 			$socket.close();
