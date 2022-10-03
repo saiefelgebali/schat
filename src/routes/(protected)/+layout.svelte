@@ -2,8 +2,14 @@
 	import { friendsStore, socket } from '$lib/store';
 	import { io } from 'socket.io-client';
 	import { onMount } from 'svelte';
-	import type { ChatMessage } from '../../lib/chatMessage.interface';
-	import type { Friend } from '$lib/friend.interface';
+	import type { ChatMessage } from '$lib/interface/chat.message.interface';
+	import type { Friend } from '$lib/interface/friend.interface';
+	import type {
+		SocketJoin,
+		SocketMessage,
+		SocketOnline,
+		SocketTyping
+	} from '$lib/interface/socket.event.interface';
 
 	export let data: {
 		user: { username: string };
@@ -34,10 +40,12 @@
 
 		$socket.on('connect', () => {
 			console.log('Connected via WebSockets');
-			$socket.emit('join', data.user.username);
+			$socket.emit('join', {
+				username: data.user.username
+			} as SocketJoin);
 		});
 
-		$socket.on('message', (message: ChatMessage) => {
+		$socket.on('message', (message: SocketMessage) => {
 			if (message.from === data.user.username) {
 				updateFriend(message.to, (friend) => {
 					friend.messages = [...friend.messages, message];
@@ -48,18 +56,17 @@
 			});
 		});
 
-		$socket.on('typing', (data: { from: string; status: boolean }) => {
-			updateFriend(data.from, (friend) => {
-				friend.typing = data.status;
+		$socket.on('typing', (message: SocketTyping) => {
+			updateFriend(message.from, (friend) => {
+				friend.typing = message.status;
 			});
 		});
 
-		$socket.on('online', (data: { username: string; status: boolean }) => {
-			console.log(data.username, 'is', data.status ? 'online' : 'offline');
+		$socket.on('online', (message: SocketOnline) => {
 			friendsStore.update((store) => {
-				const storedFriend = store.find((f) => f.username === data.username);
+				const storedFriend = store.find((f) => f.username === message.username);
 				if (!storedFriend) return store;
-				storedFriend.online = data.status;
+				storedFriend.online = message.status;
 				return store;
 			});
 		});

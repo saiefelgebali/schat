@@ -1,7 +1,7 @@
 import { redirect, type ServerLoad } from '@sveltejs/kit';
 import { authorizedRouteGuard } from '$lib/route.guards';
-import db from '$lib/db';
-import type { Friend } from '$lib/friend.interface';
+import db from '$shared/db';
+import type { Friend } from '$shared/interface';
 
 export const load: ServerLoad = async (event) => {
 	authorizedRouteGuard(event);

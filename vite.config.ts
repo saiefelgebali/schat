@@ -1,14 +1,20 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import type { Plugin, UserConfig } from 'vite';
-import { configureServer } from './server/webSocketServer';
+import { configureServer } from './server/webSocketDevServer';
+import path from 'path';
 
-export const webSocketServer: Plugin = {
-	name: 'webSocketServer',
+export const webSocketDevServer: Plugin = {
+	name: 'webSocketDevServer',
 	configureServer: configureServer
 };
 
 const config: UserConfig = {
-	plugins: [webSocketServer, sveltekit()]
+	resolve: {
+		alias: {
+			$shared: path.resolve(__dirname, './shared')
+		}
+	},
+	plugins: [webSocketDevServer, sveltekit()]
 };
 
 export default config;

@@ -1,24 +1,16 @@
-// @ts-nocheck
 import { Server } from 'socket.io';
-import { PrismaClient } from '@prisma/client';
+import { SocketMessage } from '../../shared/interface.js';
+import db from '../../shared/db.js';
 
-/** @param server {import('vite').ViteDevServer} */
-export const configureServer = (server) => {
-	if (!server.httpServer) throw new Error('Could not access HTTP server');
-
-	// Establish connection to database
-	const db = new PrismaClient();
-
+export const configureSocket = (io: Server) => {
 	// Keep track of who is online
 	const userSockets = {};
 
-	const io = new Server(server.httpServer);
-
 	io.on('connection', (socket) => {
-		let socketUsername = '';
+		let username = '';
 
-		socket.on('join', async (username) => {
-			socketUsername = username;
+		socket.on('join', async (message) => {
+			username = message.username;
 			userSockets[username] = socket;
 
 			// Alert friends
@@ -32,7 +24,7 @@ export const configureServer = (server) => {
 			});
 		});
 
-		socket.on('message', (message) => {
+		socket.on('message', (message: SocketMessage) => {
 			if (message.to in userSockets) {
 				const friend = userSockets[message.to];
 				friend.emit('message', message);
@@ -50,17 +42,17 @@ export const configureServer = (server) => {
 		});
 
 		socket.on('disconnect', async () => {
-			delete userSockets[socketUsername];
+			delete userSockets[username];
 
 			// Alert friends
 			const user = await db.user.findUnique({
 				select: { friends: true },
-				where: { username: socketUsername }
+				where: { username }
 			});
 			if (!user) return;
 			user.friends.forEach((f) => {
 				if (!(f.username in userSockets)) return;
-				userSockets[f.username].emit('online', { username: socketUsername, status: false });
+				userSockets[f.username].emit('online', { username, status: false });
 			});
 		});
 	});

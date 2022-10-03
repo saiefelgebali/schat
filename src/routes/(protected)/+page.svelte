@@ -2,7 +2,7 @@
 	import { sendForm } from '$lib/api';
 	import { friendsStore } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
-	import type { Friend } from '$lib/friend.interface';
+	import type { Friend } from '$lib/interface/friend.interface';
 
 	export let data: {
 		friends: Friend[];

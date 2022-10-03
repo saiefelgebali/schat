@@ -1,6 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import cookie from 'cookie';
-import db from '$lib/db';
+import db from '$shared/db';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const cookieHeader = event.request.headers.get('cookie');

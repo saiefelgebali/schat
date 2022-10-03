@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 
-import db from '$lib/db';
+import db from '$shared/db';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {

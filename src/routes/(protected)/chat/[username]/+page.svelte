@@ -2,10 +2,10 @@
 	import { socket } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
 	import MessageField from './MessageField.svelte';
-	import type { ChatMessage } from '$lib/chatMessage.interface';
+	import type { ChatMessage } from '$lib/interface/chat.message.interface';
 	import MessageBox from './MessageBox.svelte';
 	import { friendsStore } from '$lib/store';
-	import type { Friend } from '$lib/friend.interface';
+	import type { Friend } from '$lib/interface/friend.interface';
 
 	// State
 	export let data: {

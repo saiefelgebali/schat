@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import Message from './Message.svelte';
-	import type { Friend } from '$lib/friend.interface';
+	import type { Friend } from '$lib/interface/friend.interface';
 
 	export let user: { username: string };
 	export let friend: Friend;

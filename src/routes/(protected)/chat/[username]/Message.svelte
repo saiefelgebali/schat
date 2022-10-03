@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ChatMessage } from '$lib/chatMessage.interface';
+	import type { ChatMessage } from '$lib/interface/chat.message.interface';
 
 	export let message: ChatMessage;
 	export let user: { username: string };
