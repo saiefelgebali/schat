@@ -25,8 +25,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Check if the friend exists
-	const friend = await db.user.findUnique({
-		select: { friends: { where: { username } } },
+	const friend = await db.profile.findUnique({
+		select: { username: true, friends: { where: { username } } },
 		where: { username: friendUsername }
 	});
 	if (!friend) {
