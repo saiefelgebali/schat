@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { SocketMessage } from '../../shared/interface.js';
+import { SocketMessage, SocketOnline } from '../../shared/interface.js';
 import db from '../../shared/db.js';
 import { ConsoleColor, log } from './log.js';
 
@@ -25,17 +25,24 @@ export const configureSocket = (io: Server) => {
 
 			userSockets[username] = socket;
 
-			// Alert friends
+			// Add to friends' rooms
 			const user = await db.user.findUnique({ select: { friends: true }, where: { username } });
+			user.friends.forEach((friend) => {
+				// Add to friends' groups
+				socket.join(`friends-of-${friend.username}`);
 
-			if (!user) return;
-
-			user.friends.forEach((f) => {
-				if (!(f.username in userSockets)) return;
-				userSockets[f.username].emit('online', { username, status: true });
-				// Alert self of online friends
-				socket.emit('online', { username: f.username, status: true });
+				// Update users already connected
+				socket.emit('online', {
+					username: friend.username,
+					status: friend.username in userSockets
+				} as SocketOnline);
 			});
+
+			// Notify friends that this user joined
+			io.to(`friends-of-${username}`).emit('online', {
+				username,
+				status: true
+			} as SocketOnline);
 		});
 
 		socket.on('message', (message: SocketMessage) => {
@@ -60,20 +67,8 @@ export const configureSocket = (io: Server) => {
 
 			log(`'${username}' disconnected.`, { color: ConsoleColor.FgYellow });
 
-			if (!username) {
-				return;
-			}
-
-			// Alert friends
-			const user = await db.user.findUnique({
-				select: { friends: true },
-				where: { username }
-			});
-			if (!user) return;
-			user.friends.forEach((f) => {
-				if (!(f.username in userSockets)) return;
-				userSockets[f.username].emit('online', { username, status: false });
-			});
+			// Notify friends that this user disconnected
+			io.to(`friends-of-${username}`).emit('online', { username, status: false });
 		});
 	});
 };
