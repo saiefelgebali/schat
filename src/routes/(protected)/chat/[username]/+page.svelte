@@ -1,61 +1,26 @@
 <script lang="ts">
-	import { socket } from '$lib/socket';
+	import { socket } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
 	import MessageField from './MessageField.svelte';
-	import type { ChatMessage } from './ChatMessage.interface';
+	import type { ChatMessage } from '$lib/chatMessage.interface';
 	import MessageBox from './MessageBox.svelte';
 	import { friendsStore } from '$lib/store';
+	import type { Friend } from '$lib/friend.interface';
 
 	// State
 	export let data: {
 		user: { username: string };
-		friend: { username: string };
+		friend: Friend;
 		isFriend: boolean;
 	};
 
-	const { user, friend, isFriend } = data;
-
-	$: storedFriend = $friendsStore.find((f) => f.username === friend.username);
+	$: friend = $friendsStore.find((f) => f.username === data.friend.username)!;
 
 	let draft: ChatMessage = {
 		text: '',
 		from: data.user.username,
 		to: data.friend.username
 	};
-	let messages: ChatMessage[] = [];
-
-	let typing: boolean = false;
-
-	// Add friend to store if not already included
-	friendsStore.update((store) => {
-		if (store.find((f) => f.username === friend.username)) return store;
-		store.push({ ...friend, online: false });
-		return store;
-	});
-
-	socket.subscribe((s) => {
-		if (!s) return;
-
-		s.on('message', (message: ChatMessage) => {
-			if ([data.friend.username, data.user.username].includes(message.from)) {
-				messages = [...messages, message];
-			}
-		});
-
-		s.on('typing', (data: { status: boolean }) => {
-			typing = data.status;
-		});
-
-		s.on('online', (data: { username: string; status: boolean }) => {
-			console.log(data.username, 'is', data.status ? 'online' : 'offline');
-			friendsStore.update((store) => {
-				const storedFriend = store.find((f) => f.username === data.username);
-				if (!storedFriend) return store;
-				storedFriend.online = data.status;
-				return store;
-			});
-		});
-	});
 
 	// Send typing status
 	$: {
@@ -76,11 +41,15 @@
 </script>
 
 <div class="max-h-screen h-screen flex flex-col">
-	<Header title={friend.username} />
+	<Header>
+		<div class="flex items-center gap-2" slot="center">
+			<h2 class="font-medium text-gray-900">{friend.username}</h2>
+			<p>{friend.online ? 'Online' : 'Offline'}</p>
+		</div>
+	</Header>
 
-	{storedFriend?.online}
 	{#if data.isFriend}
-		<MessageBox {user} {friend} {messages} {typing} />
+		<MessageBox user={data.user} {friend} />
 	{/if}
 </div>
 

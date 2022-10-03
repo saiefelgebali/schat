@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
-	import type { ChatMessage } from './ChatMessage.interface';
+	import type { ChatMessage } from '$lib/chatMessage.interface';
 
 	export let message: ChatMessage;
 	export let user: { username: string };

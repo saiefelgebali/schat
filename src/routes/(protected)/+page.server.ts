@@ -1,4 +1,5 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
+import type { Friend } from '$lib/friend.interface';
 import { authorizedRouteGuard } from '$lib/route.guards';
 import db from '$lib/db';
 
@@ -26,8 +27,15 @@ export const load = async (event: ServerLoadEvent) => {
 		}
 	}))!;
 
+	const friends = user.friends.map<Friend>((f) => ({
+		username: f.username,
+		online: false,
+		typing: false,
+		messages: []
+	}));
+
 	return {
-		friends: [...user.friends],
+		friends,
 		friendRequests: [...profile.friends]
 	};
 };

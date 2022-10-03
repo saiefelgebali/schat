@@ -1,6 +1,7 @@
 import { redirect, type ServerLoad } from '@sveltejs/kit';
 import { authorizedRouteGuard } from '$lib/route.guards';
 import db from '$lib/db';
+import type { Friend } from '$lib/friend.interface';
 
 export const load: ServerLoad = async (event) => {
 	authorizedRouteGuard(event);
@@ -24,8 +25,8 @@ export const load: ServerLoad = async (event) => {
 		friend.friends.map((f) => f.username).includes(user.username);
 
 	return {
-		user: { username: event.locals.user!.username },
-		friend: { username: friend.username },
+		user: { username: user.username },
+		friend: { username: friend.username, online: false, typing: false, messages: [] } as Friend,
 		isFriend
-	} as App.PageData;
+	};
 };

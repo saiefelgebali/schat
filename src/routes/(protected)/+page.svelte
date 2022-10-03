@@ -2,16 +2,13 @@
 	import { sendForm } from '$lib/api';
 	import { friendsStore } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
+	import type { Friend } from '$lib/friend.interface';
 
 	export let data: {
-		friends: { username: string }[];
+		friends: Friend[];
 		friendRequests: { username: string }[];
 	};
 
-	// Update store
-	friendsStore.set(data.friends.map((f) => ({ ...f, online: false })));
-
-	let friends = data.friends as { username: string }[];
 	let friendRequests = data.friendRequests as { username: string }[];
 
 	const addFriend = async (e: Event) => {
@@ -21,7 +18,10 @@
 			// Add new friend to friend's list
 			const newFriend = res.data.friend;
 			friendRequests = friendRequests.filter((fr) => fr.username !== newFriend.username);
-			friends = [...friends, newFriend];
+			$friendsStore = [
+				...$friendsStore,
+				{ username: newFriend.username, online: false, typing: false, messages: [] }
+			];
 		}
 
 		if (res.error) {
@@ -41,14 +41,14 @@
 		<h1 class="text-3xl">Friends</h1>
 	</div>
 	<div class="divide-y">
-		{#if friends.length === 0}
+		{#if $friendsStore.length === 0}
 			<div class="container p-4">
 				<p class="mb-2">You have no friends added. 🥲</p>
 				<p><a class="text-gray-500" href="/settings">Click here to add a friend!</a></p>
 			</div>
 		{/if}
 
-		{#each friends as friend}
+		{#each $friendsStore as friend}
 			<a href={`/chat/${friend.username}`} class="block py-4 container hover:bg-gray-100">
 				<p class="text-gray-700">{friend.username}</p>
 				<p class="text-gray-400">Click to message</p>

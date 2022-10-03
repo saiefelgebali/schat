@@ -16,11 +16,12 @@
 				{/if}
 				<slot name="left" />
 			</div>
-			{#if title !== ''}
-				<div>
+			<div>
+				{#if title !== ''}
 					<h1 class="font-medium text-gray-900">{title}</h1>
-				</div>
-			{/if}
+				{/if}
+				<slot name="center" />
+			</div>
 			<div class="w-full">
 				<slot name="right" />
 			</div>

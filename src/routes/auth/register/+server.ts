@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request }: RequestEvent) => {
 
 		return new Response(
 			JSON.stringify({
-				error: 'User created successfully.'
+				success: 'User created successfully.'
 			}),
 			{ status: 201 }
 		);

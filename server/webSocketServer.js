@@ -27,6 +27,8 @@ export const configureServer = (server) => {
 			user.friends.forEach((f) => {
 				if (!(f.username in userSockets)) return;
 				userSockets[f.username].emit('online', { username, status: true });
+				// Alert self of online friends
+				socket.emit('online', { username: f.username, status: true });
 			});
 		});
 
