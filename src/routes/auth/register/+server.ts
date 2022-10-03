@@ -16,8 +16,8 @@ export const POST: RequestHandler = async ({ request }: RequestEvent) => {
 		);
 	}
 
-	// Create a user
 	try {
+		// Create a user
 		await db.user.create({
 			data: {
 				username,
@@ -26,6 +26,7 @@ export const POST: RequestHandler = async ({ request }: RequestEvent) => {
 			}
 		});
 
+		// Create matching profile
 		await db.profile.create({
 			data: { username }
 		});

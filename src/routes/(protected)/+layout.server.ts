@@ -1,5 +1,5 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import type { Friend } from '$lib/interface/friend.interface';
+import type { Friend } from '$shared/interface';
 import { authorizedRouteGuard } from '$lib/route.guards';
 import db from '$shared/db';
 
