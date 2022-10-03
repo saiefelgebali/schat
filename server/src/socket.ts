@@ -1,7 +1,10 @@
 import { Server } from 'socket.io';
 import { SocketMessage, SocketOnline } from '../../shared/interface.js';
-import db from '../../shared/db.js';
 import { ConsoleColor, log } from './log.js';
+import db from '../../shared/db.js';
+
+/** Standardize every user's friend group label */
+export const friendsOfUserRoom = (username: string) => `friends-of-${username}`;
 
 export const configureSocket = (io: Server) => {
 	// Keep track of who is online
@@ -29,7 +32,7 @@ export const configureSocket = (io: Server) => {
 			const user = await db.user.findUnique({ select: { friends: true }, where: { username } });
 			user.friends.forEach((friend) => {
 				// Add to friends' groups
-				socket.join(`friends-of-${friend.username}`);
+				socket.join(friendsOfUserRoom(friend.username));
 
 				// Update users already connected
 				socket.emit('online', {
@@ -39,7 +42,7 @@ export const configureSocket = (io: Server) => {
 			});
 
 			// Notify friends that this user joined
-			io.to(`friends-of-${username}`).emit('online', {
+			io.to(friendsOfUserRoom(username)).emit('online', {
 				username,
 				status: true
 			} as SocketOnline);
@@ -68,7 +71,7 @@ export const configureSocket = (io: Server) => {
 			log(`'${username}' disconnected.`, { color: ConsoleColor.FgYellow });
 
 			// Notify friends that this user disconnected
-			io.to(`friends-of-${username}`).emit('online', { username, status: false });
+			io.to(friendsOfUserRoom(username)).emit('online', { username, status: false });
 		});
 	});
 };
