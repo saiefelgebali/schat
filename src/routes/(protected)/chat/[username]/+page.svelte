@@ -2,10 +2,9 @@
 	import { socket } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
 	import MessageField from './MessageField.svelte';
-	import type { ChatMessage } from '$lib/interface/chat.message.interface';
 	import MessageBox from './MessageBox.svelte';
 	import { friendsStore } from '$lib/store';
-	import type { Friend } from '$lib/interface/friend.interface';
+	import type { Friend, ChatMessage } from '$shared/interface';
 
 	// State
 	export let data: {
@@ -23,19 +22,21 @@
 	};
 
 	// Send typing status
+	$: typing = draft.text.length > 2;
+
 	$: {
 		if ($socket && $socket.active) {
 			$socket.emit('typing', {
 				from: data.user.username,
 				to: data.friend.username,
-				status: draft.text.length > 2
+				status: typing
 			});
 		}
 	}
 
 	// Send drafted message
 	function sendMessage() {
-		$socket.emit('message', draft);
+		$socket?.emit('message', draft);
 		draft.text = '';
 	}
 </script>

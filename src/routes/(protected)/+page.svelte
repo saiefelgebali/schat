@@ -3,6 +3,7 @@
 	import { friendsStore } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
 	import type { Friend } from '$shared/interface';
+	import StatusIndicator from './StatusIndicator.svelte';
 
 	export let data: {
 		friends: Friend[];
@@ -50,8 +51,17 @@
 
 		{#each $friendsStore as friend}
 			<a href={`/chat/${friend.username}`} class="block py-4 container hover:bg-gray-100">
-				<p class="text-gray-700">{friend.username}</p>
-				<p class="text-gray-400">Click to message</p>
+				<div class="flex items-center gap-4">
+					<StatusIndicator online={friend.online} />
+					<div>
+						<p class="text-gray-700">{friend.username}</p>
+						{#if friend.typing}
+							<p class="text-gray-400">Typing...</p>
+						{:else}
+							<p class="text-gray-400">Click to message</p>
+						{/if}
+					</div>
+				</div>
 			</a>
 		{/each}
 	</div>
