@@ -49,14 +49,14 @@
 	}
 </script>
 
-<div class="max-h-screen h-screen flex flex-col">
-	<Header>
-		<div class="flex items-center gap-2" slot="center">
-			<h2 class="font-medium text-gray-900">{friend.username}</h2>
-			<p>{friend.online ? 'Online' : 'Offline'}</p>
-		</div>
-	</Header>
+<Header>
+	<div class="flex items-center gap-2" slot="center">
+		<h2 class="font-medium text-gray-900">{friend.username}</h2>
+		<p>{friend.online ? 'Online' : 'Offline'}</p>
+	</div>
+</Header>
 
+<div>
 	{#if data.isFriend}
 		<MessageBox user={data.user} {friend} />
 	{/if}
