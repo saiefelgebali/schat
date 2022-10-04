@@ -26,4 +26,3 @@ export interface Friend {
     typing: boolean;
     messages: ChatMessage[];
 }
-//# sourceMappingURL=interface.d.ts.map

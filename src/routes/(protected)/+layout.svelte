@@ -8,7 +8,7 @@
 		SocketOnline,
 		SocketTyping,
 		Friend
-	} from '$shared/interface';
+	} from '$shared/src/interface';
 
 	export let data: {
 		user: { username: string };

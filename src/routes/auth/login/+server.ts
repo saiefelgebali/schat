@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import bcrypt from 'bcrypt';
 import cookie from 'cookie';
-import db from '$shared/db';
+import db from '$shared/src/db';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const form = await request.formData();

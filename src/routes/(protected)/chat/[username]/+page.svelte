@@ -4,7 +4,7 @@
 	import MessageField from './MessageField.svelte';
 	import MessageBox from './MessageBox.svelte';
 	import { friendsStore } from '$lib/store';
-	import type { Friend, ChatMessage } from '$shared/interface';
+	import type { Friend, ChatMessage } from '$shared/src/interface';
 	import { onMount } from 'svelte';
 
 	// State

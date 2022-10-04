@@ -2,7 +2,7 @@
 	import { sendForm } from '$lib/api';
 	import { friendsStore } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
-	import type { Friend } from '$shared/interface';
+	import type { Friend } from '$shared/src/interface';
 	import StatusIndicator from './StatusIndicator.svelte';
 
 	export let data: {

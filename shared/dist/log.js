@@ -25,5 +25,6 @@ export var ConsoleColor;
     ConsoleColor["BgWhite"] = "\u001B[47m";
 })(ConsoleColor || (ConsoleColor = {}));
 export const log = (message, options) => {
-    console.log(`${options?.color ?? ''}[socket.ts]${ConsoleColor.Reset} ${message}`);
+    var _a;
+    console.log(`${(_a = options === null || options === void 0 ? void 0 : options.color) !== null && _a !== void 0 ? _a : ''}[socket.ts]${ConsoleColor.Reset} ${message}`);
 };

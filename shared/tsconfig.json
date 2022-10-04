@@ -6,12 +6,12 @@ A: https://stackoverflow.com/questions/47729344/how-to-share-code-between-typesc
 {
 	"compilerOptions": {
 		/* Truncated compiler options to list only relevant options */
-		"target": "ESNext",
+		"target": "ES2015",
 		"moduleResolution": "node",
-		"declaration": true,
-		"declarationMap": true,
-		"rootDir": ".",
-		"composite": true
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"composite": true,
+		"esModuleInterop": true
 	},
 	"references": [] // * Any project that is referenced must itself have a `references` array (which may be empty).
 }
