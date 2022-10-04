@@ -3,7 +3,7 @@
 	import { friendsStore } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
 	import type { Friend } from '$shared/src/interface';
-	import StatusIndicator from './StatusIndicator.svelte';
+	import FriendPreview from './FriendPreview.svelte';
 
 	export let data: {
 		friends: Friend[];
@@ -39,35 +39,19 @@
 
 <section class="pt-8">
 	<div class="container">
-		<h1 class="text-3xl">Friends ({$friendsStore.length})</h1>
+		<h1 class="text-3xl">Friends ({$friendsStore.length || data.friends.length})</h1>
 	</div>
 	<div class="divide-y">
-		{#if $friendsStore.length === 0}
+		{#if $friendsStore.length === 0 && data.friends.length === 0}
 			<div class="container p-4">
 				<p class="mb-2">You have no friends added. 🥲</p>
 				<p><a class="text-gray-500" href="/settings">Click here to add a friend!</a></p>
 			</div>
+		{:else if $friendsStore.length > 0}
+			{#each $friendsStore as friend} <FriendPreview {friend} />{/each}
+		{:else if data.friends.length > 0}
+			{#each data.friends as friend} <FriendPreview {friend} /> {/each}
 		{/if}
-
-		{#each $friendsStore as friend}
-			<a href={`/chat/${friend.username}`} class="block py-4 container hover:bg-gray-100">
-				<div class="flex items-center gap-4">
-					<StatusIndicator online={friend.online} />
-					<div class="flex flex-col overflow-hidden">
-						<p class="text-gray-700 truncate">{friend.username}</p>
-						<p class="text-gray-400 truncate">
-							{#if friend.typing}
-								Typing...
-							{:else if friend.messages.length > 0}
-								{friend.messages[friend.messages.length - 1].text}
-							{:else}
-								Click to message
-							{/if}
-						</p>
-					</div>
-				</div>
-			</a>
-		{/each}
 	</div>
 </section>
 
