@@ -73,7 +73,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Success
 		return new Response(
-			JSON.stringify({ success: 'Added friend.', data: { friend: { username: friendUsername } } }),
+			JSON.stringify({
+				success: 'Added friend.',
+				data: { friend: { username: friendUsername } }
+			}),
 			{ status: 200 }
 		);
 	}
@@ -89,7 +92,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	return new Response(
 		JSON.stringify({
 			success: 'Sent friend request.',
-			data: { friend: { username: friendUsername } }
+			data: { friendRequest: { username: friendUsername } }
 		}),
 		{ status: 200 }
 	);

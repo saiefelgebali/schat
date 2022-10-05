@@ -7,7 +7,9 @@
 		SocketMessage,
 		SocketOnline,
 		SocketTyping,
-		Friend
+		Friend,
+		SocketFriendRequest,
+		SocketFriend
 	} from '$shared/src/interface';
 
 	export let data: {
@@ -76,6 +78,17 @@
 				storedFriend.online = message.status;
 				return store;
 			});
+		});
+
+		s.on('friendRequest', (data: SocketFriendRequest) => {
+			$friendRequestsStore = [...$friendRequestsStore, data];
+		});
+
+		s.on('friend', (data: SocketFriend) => {
+			$friendsStore = [
+				...$friendsStore,
+				{ messages: [], online: false, typing: false, username: data.username }
+			];
 		});
 
 		socket.set(s);

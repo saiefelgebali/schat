@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { SocketMessage, SocketOnline } from './interface';
+import { SocketFriend, SocketFriendRequest, SocketMessage, SocketOnline } from './interface';
 import { ConsoleColor, log } from './log.js';
 import db from './db.js';
 
@@ -69,13 +69,23 @@ io.on('connection', (socket) => {
 		});
 	});
 
-	socket.on('disconnect', async () => {
+	socket.on('disconnect', () => {
 		delete userSockets[username];
 
 		log(`'${username}' disconnected.`, { color: ConsoleColor.FgYellow });
 
 		// Notify friends that this user disconnected
 		io.to(friendsOfUserRoom(username)).emit('online', { username, status: false });
+	});
+
+	socket.on('friendRequest', (data: SocketFriendRequest) => {
+		const friend = userSockets[data.username];
+		friend?.emit('friendRequest', { username } as SocketFriendRequest);
+	});
+
+	socket.on('friend', (data: SocketFriend) => {
+		const friend = userSockets[data.username];
+		friend?.emit('friend', { username } as SocketFriend);
 	});
 });
 

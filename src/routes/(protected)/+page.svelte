@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { sendForm } from '$lib/api';
-	import { friendRequestsStore, friendsStore } from '$lib/store';
+	import { friendRequestsStore, friendsStore, socket } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
 	import FriendPreview from './FriendPreview.svelte';
+	import type { SocketFriend } from '$shared/src/interface';
 
 	const addFriend = async (e: Event) => {
 		const res = await sendForm(e.target as HTMLFormElement);
@@ -19,6 +20,8 @@
 			$friendRequestsStore = $friendRequestsStore.filter(
 				(fr) => fr.username !== newFriend.username
 			);
+
+			$socket?.emit('friend', { username: newFriend.username } as SocketFriend);
 		}
 
 		if (res.error) {

@@ -21,6 +21,14 @@ export interface SocketOnline {
 	status: boolean;
 }
 
+export interface SocketFriendRequest {
+	username: string;
+}
+
+export interface SocketFriend {
+	username: string;
+}
+
 // Other
 
 export interface ChatMessage {
