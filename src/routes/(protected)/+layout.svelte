@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { friendsStore, socket } from '$lib/store';
+	import { friendRequestsStore, friendsStore, socket } from '$lib/store';
 	import { io } from 'socket.io-client';
 	import { onMount } from 'svelte';
 	import type {
@@ -27,13 +27,10 @@
 
 	onMount(() => {
 		// Add friends to store
-		friendsStore.update((store) => {
-			data.friends.forEach((friend) => {
-				if (store.find((f) => f.username === friend.username)) return;
-				store.push({ ...friend });
-			});
-			return store;
-		});
+		$friendsStore = data.friends;
+
+		// Add friend requests to store
+		$friendRequestsStore = data.friendRequests;
 
 		// Remove existing socket
 		if ($socket) {

@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
 		userSockets[username] = socket;
 
 		// Add to friends' rooms
-		const user = await db.user.findUnique({ select: { friends: true }, where: { username } });
+		const user = await db.profile.findUnique({ select: { friends: true }, where: { username } });
 		user.friends.forEach((friend) => {
 			// Add to friends' groups
 			socket.join(friendsOfUserRoom(friend.username));

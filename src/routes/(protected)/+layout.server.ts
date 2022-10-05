@@ -9,35 +9,27 @@ export const load = async (event: ServerLoadEvent) => {
 	if (!event.locals.user) throw new Error();
 	const username = event.locals.user.username;
 
-	// Select all the profiles that I have added
-	const user = (await db.user.findUnique({
+	const data = await db.profile.findUnique({
 		where: { username },
-		select: { friends: { select: { username: true } } }
-	}))!;
+		select: { friends: true, receivedFriendRequests: true }
+	});
 
-	// Select all the profiles that have added me,
-	// but I haven't added back
-	const profile = (await db.profile.findUnique({
-		where: { username },
-		select: {
-			username: true,
-			friends: {
-				select: { username: true },
-				where: { username: { notIn: user.friends.map((f) => f.username) } }
-			}
-		}
-	}))!;
+	const friends =
+		data?.friends.map<Friend>((f) => ({
+			username: f.username,
+			messages: [],
+			online: false,
+			typing: false
+		})) || [];
 
-	const friends = user.friends.map<Friend>((f) => ({
-		username: f.username,
-		online: false,
-		typing: false,
-		messages: []
-	}));
+	const friendRequests =
+		data?.receivedFriendRequests.map<{ username: string }>((fr) => ({
+			username: fr.fromUsername
+		})) || [];
 
 	return {
 		user: { username },
 		friends,
-		friendRequests: [...profile.friends]
+		friendRequests
 	};
 };

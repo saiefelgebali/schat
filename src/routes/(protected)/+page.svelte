@@ -1,16 +1,8 @@
 <script lang="ts">
 	import { sendForm } from '$lib/api';
-	import { friendsStore } from '$lib/store';
+	import { friendRequestsStore, friendsStore } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
-	import type { Friend } from '$shared/src/interface';
 	import FriendPreview from './FriendPreview.svelte';
-
-	export let data: {
-		friends: Friend[];
-		friendRequests: { username: string }[];
-	};
-
-	let friendRequests = data.friendRequests as { username: string }[];
 
 	const addFriend = async (e: Event) => {
 		const res = await sendForm(e.target as HTMLFormElement);
@@ -18,11 +10,15 @@
 		if (res.success) {
 			// Add new friend to friend's list
 			const newFriend = res.data.friend;
-			friendRequests = friendRequests.filter((fr) => fr.username !== newFriend.username);
 			$friendsStore = [
 				...$friendsStore,
 				{ username: newFriend.username, online: false, typing: false, messages: [] }
 			];
+
+			// Remove friend from requests
+			$friendRequestsStore = $friendRequestsStore.filter(
+				(fr) => fr.username !== newFriend.username
+			);
 		}
 
 		if (res.error) {
@@ -39,29 +35,27 @@
 
 <section class="pt-8">
 	<div class="container">
-		<h1 class="text-3xl">Friends ({$friendsStore.length || data.friends.length})</h1>
+		<h1 class="text-3xl">Friends ({$friendsStore.length})</h1>
 	</div>
 	<div class="divide-y">
-		{#if $friendsStore.length === 0 && data.friends.length === 0}
+		{#if $friendsStore.length === 0}
 			<div class="container p-4">
 				<p class="mb-2">You have no friends added. 🥲</p>
 				<p><a class="text-gray-500" href="/settings">Click here to add a friend!</a></p>
 			</div>
-		{:else if $friendsStore.length > 0}
+		{:else}
 			{#each $friendsStore as friend} <FriendPreview {friend} />{/each}
-		{:else if data.friends.length > 0}
-			{#each data.friends as friend} <FriendPreview {friend} /> {/each}
 		{/if}
 	</div>
 </section>
 
-{#if friendRequests.length > 0}
+{#if $friendRequestsStore.length > 0}
 	<section class="py-4">
 		<div class="container">
 			<h1 class="text-3xl">Friend Requests</h1>
 		</div>
 		<div class="divide-y">
-			{#each friendRequests as request}
+			{#each $friendRequestsStore as request}
 				<div class="py-4 container hover:bg-gray-100 flex justify-between items-center">
 					<div>
 						<p class="text-gray-700">{request.username}</p>

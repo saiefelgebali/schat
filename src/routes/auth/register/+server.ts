@@ -31,6 +31,11 @@ export const POST: RequestHandler = async ({ request }: RequestEvent) => {
 			data: { username }
 		});
 
+		// Create matching friend
+		await db.friend.create({
+			data: { username }
+		});
+
 		return new Response(
 			JSON.stringify({
 				success: 'User created successfully.'

@@ -8,14 +8,48 @@ datasource db {
 }
 
 model User {
-  username String    @id @unique
+  username String   @id @unique
   password String
-  token    String?   @unique
-  friends  Profile[]
+  token    String?  @unique
+  profile  Profile?
 }
 
 model Profile {
-  username String   @id @unique
-  lastSeen DateTime @default(now())
-  friends  User[]
+  username String @id @unique
+  user     User   @relation(fields: [username], references: [username])
+
+  friendProfile Friend?  @relation("friend_profile")
+  friends       Friend[] @relation("friend")
+
+  messagesFrom ChatMessage[] @relation("messages_from")
+  messagesTo   ChatMessage[] @relation("messages_to")
+
+  sentFriendRequests     FriendRequest[] @relation("sent_fr")
+  receivedFriendRequests FriendRequest[] @relation("received_fr")
+}
+
+model FriendRequest {
+  fromUsername String
+  from         Profile @relation("sent_fr", fields: [fromUsername], references: [username], onDelete: Cascade)
+  toUsername   String
+  to           Profile @relation("received_fr", fields: [toUsername], references: [username], onDelete: Cascade)
+
+  @@id([fromUsername, toUsername])
+}
+
+model Friend {
+  username       String    @id @unique
+  profile        Profile   @relation("friend_profile", fields: [username], references: [username])
+  lastSeen       DateTime  @default(now())
+  profileFriends Profile[] @relation("friend")
+}
+
+model ChatMessage {
+  id           String   @id @unique @default(uuid())
+  timestamp    DateTime @default(now())
+  text         String
+  fromUsername String
+  from         Profile  @relation("messages_from", fields: [fromUsername], references: [username])
+  toUsername   String
+  to           Profile  @relation("messages_to", fields: [toUsername], references: [username])
 }

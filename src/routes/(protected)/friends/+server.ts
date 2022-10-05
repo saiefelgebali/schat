@@ -3,14 +3,13 @@ import type { RequestHandler } from '@sveltejs/kit';
 import db from '$shared/src/db';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	if (!locals.user) {
-		return new Response(null, { status: 401 });
-	}
+	if (!locals.user) throw new Error('Not authorized');
 
-	const fd = await request.formData();
-	const friendUsername = fd.get('friend');
+	const form = await request.formData();
+	const friendUsername = form.get('friend');
 	const username = locals.user.username;
 
+	// Invalid input
 	if (!friendUsername || typeof friendUsername !== 'string') {
 		return new Response(JSON.stringify({ error: "You must enter your friend's username." }), {
 			status: 400
@@ -24,35 +23,74 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 	}
 
-	// Check if the friend exists
-	const friend = await db.profile.findUnique({
-		select: { username: true, friends: { where: { username } } },
-		where: { username: friendUsername }
-	});
-	if (!friend) {
-		return new Response(JSON.stringify({ error: 'Could not add friend.' }), { status: 400 });
+	// Check if that profile exists
+	const other = await db.profile.findUnique({ where: { username: friendUsername } });
+	if (!other) {
+		return new Response(JSON.stringify({ error: 'Could not add this user...' }), {
+			status: 400
+		});
 	}
 
-	// Check if they are already friends
-	if (friend.friends.length !== 0) {
+	// Check if you already sent them a request
+	const profile = await db.profile.findUnique({
+		where: { username },
+		select: {
+			friends: { where: { username: friendUsername } },
+			sentFriendRequests: { where: { to: { username: friendUsername } } },
+			receivedFriendRequests: { where: { from: { username: friendUsername } } }
+		}
+	});
+
+	if (!profile) throw new Error('Could not find profile');
+
+	if (profile.friends.length > 0 || profile.sentFriendRequests.length > 0) {
+		return new Response(JSON.stringify({ error: `You cannot add ${friendUsername} again...` }), {
+			status: 400
+		});
+	}
+
+	// Other person sent you a friend request
+	if (profile.receivedFriendRequests.length > 0) {
+		await db.profile.update({
+			where: { username },
+			data: {
+				// Add to friends
+				friends: { connect: { username: friendUsername } },
+				receivedFriendRequests: {
+					delete: {
+						fromUsername_toUsername: { fromUsername: friendUsername, toUsername: username }
+					}
+				}
+			}
+		});
+
+		await db.profile.update({
+			where: { username: friendUsername },
+			data: {
+				friends: { connect: { username } }
+			}
+		});
+
+		// Success
 		return new Response(
-			JSON.stringify({ error: `You are already friends with ${friendUsername}.` }),
-			{ status: 400 }
+			JSON.stringify({ success: 'Added friend.', data: { friend: { username: friendUsername } } }),
+			{ status: 200 }
 		);
 	}
 
-	// Create relationship
-	try {
-		await db.user.update({
-			where: { username },
-			data: { friends: { connect: { username: friendUsername } } }
-		});
-	} catch (e) {
-		return new Response(JSON.stringify({ error: 'Something went wrong.' }), { status: 500 });
-	}
+	// Otherwise, just send that profile a friend request
+	await db.profile.update({
+		where: { username },
+		data: {
+			sentFriendRequests: { create: { toUsername: friendUsername } }
+		}
+	});
 
 	return new Response(
-		JSON.stringify({ success: 'Added friend.', data: { friend: { username: friendUsername } } }),
+		JSON.stringify({
+			success: 'Sent friend request.',
+			data: { friend: { username: friendUsername } }
+		}),
 		{ status: 200 }
 	);
 };
