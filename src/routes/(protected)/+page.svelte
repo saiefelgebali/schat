@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { sendForm } from '$lib/api';
-	import { friendRequestsStore, friendsStore, socket } from '$lib/store';
+	import { friendRequestsStore, friendsStore, socketManager } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
 	import FriendPreview from './FriendPreview.svelte';
 	import type { SocketFriend } from '$shared/src/interface';
@@ -21,7 +21,7 @@
 				(fr) => fr.username !== newFriend.username
 			);
 
-			$socket?.emit('friend', { username: newFriend.username } as SocketFriend);
+			$socketManager?.emit('friend', { username: newFriend.username } as SocketFriend);
 		}
 
 		if (res.error) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { socket } from '$lib/store';
+	import { socketManager } from '$lib/store';
 	import Header from '$lib/components/Header.svelte';
 	import MessageField from './MessageField.svelte';
 	import MessageBox from './MessageBox.svelte';
@@ -19,7 +19,7 @@
 
 	onMount(() => {
 		if (!storedFriend) {
-			$friendsStore.push(data.friend);
+			$friendsStore = [...$friendsStore, data.friend];
 		}
 	});
 
@@ -33,18 +33,17 @@
 	$: typing = draft.text.length > 2;
 
 	$: {
-		if ($socket && $socket.active) {
-			$socket.emit('typing', {
+		if ($socketManager)
+			$socketManager.emit('typing', {
 				from: data.user.username,
 				to: data.friend.username,
 				status: typing
 			});
-		}
 	}
 
 	// Send drafted message
 	function sendMessage() {
-		$socket?.emit('message', draft);
+		$socketManager.emit('message', draft);
 		draft.text = '';
 	}
 </script>

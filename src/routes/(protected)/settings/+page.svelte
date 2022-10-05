@@ -3,7 +3,7 @@
 	import MainLayout from '$lib/components/MainLayout.svelte';
 	import Textfield from '$lib/components/Textfield.svelte';
 	import FormInfo from '$lib/components/FormInfo.svelte';
-	import { socket } from '$lib/store';
+	import { socketManager } from '$lib/store';
 	import type { SocketFriend, SocketFriendRequest } from '$shared/src/interface';
 
 	export let data: App.PageData;
@@ -19,11 +19,11 @@
 		success = res.success || '';
 
 		if (res.data.friendRequest) {
-			$socket?.emit('friendRequest', {
+			$socketManager?.emit('friendRequest', {
 				username: res.data.friendRequest.username
 			} as SocketFriendRequest);
 		} else if (res.data.friend) {
-			$socket?.emit('friend', { username: res.data.friend.username } as SocketFriend);
+			$socketManager?.emit('friend', { username: res.data.friend.username } as SocketFriend);
 		}
 
 		formEl.reset();
