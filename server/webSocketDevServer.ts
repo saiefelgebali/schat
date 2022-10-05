@@ -1,8 +1,8 @@
 import type { ViteDevServer } from 'vite';
-import io from '../shared/src/socket';
+import { SocketServer } from '../shared/src/socket.server';
 
 export const configureServer = (server: ViteDevServer) => {
 	if (!server.httpServer) throw new Error('Could not access HTTP server');
-
-	io.attach(server.httpServer);
+	const socketServer = new SocketServer();
+	socketServer.attachToServer(server.httpServer);
 };

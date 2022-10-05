@@ -1,12 +1,13 @@
 import express from 'express';
 import { createServer } from 'http';
 import { handler } from '../build/handler.js';
-import io from '../shared/dist/socket.js';
+import { SocketServer } from '../shared/src/socket.server';
 
 const port = 3000;
 const app = express();
 const server = createServer(app);
-io.attach(server);
+const socketServer = new SocketServer();
+socketServer.attachToServer(server);
 app.use(handler);
 server.listen(port, () => {
 	console.log(`Listening at http://localhost:${port}`);
