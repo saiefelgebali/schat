@@ -19,6 +19,15 @@ export const load: ServerLoad = async (event) => {
 		throw redirect(302, '/');
 	}
 
+	const messages = await db.chatMessage.findMany({
+		where: {
+			fromUsername: { in: [user.username, friend.username] },
+			OR: { toUsername: { in: [user.username, friend.username] } }
+		},
+		take: 5,
+		orderBy: { timestamp: 'desc' }
+	});
+
 	// Check if there is a mutual relationship in place
 	const isFriend =
 		user.friends.map((f) => f.username).includes(friend.username) &&
@@ -26,7 +35,7 @@ export const load: ServerLoad = async (event) => {
 
 	return {
 		user: { username: user.username },
-		friend: { username: friend.username, online: false, typing: false, messages: [] } as Friend,
+		friend: { username: friend.username, online: false, typing: false, messages } as Friend,
 		isFriend
 	};
 };

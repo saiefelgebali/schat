@@ -2,13 +2,13 @@ import { friendRequestsStore, friendsStore } from '$lib/store';
 import { io, Socket } from 'socket.io-client';
 import type {
 	SocketJoin,
-	SocketMessage,
 	SocketOnline,
 	SocketTyping,
 	Friend,
 	SocketFriendRequest,
 	SocketFriend
 } from '$shared/src/interface';
+import type { ChatMessage } from '@prisma/client';
 
 /**
  * Update the state of a friend in memory.
@@ -49,15 +49,15 @@ export class SocketManager {
 		} as SocketJoin);
 	};
 
-	onMessage = (data: SocketMessage) => {
-		if (data.from === this.username) {
-			updateFriend(data.to, (friend) => {
+	onMessage = (data: ChatMessage) => {
+		if (data.fromUsername === this.username) {
+			updateFriend(data.toUsername, (friend) => {
 				friend.messages = [...friend.messages, data];
 			});
 			return;
 		}
 
-		updateFriend(data.from, (friend) => {
+		updateFriend(data.fromUsername, (friend) => {
 			friend.messages = [...friend.messages, data];
 		});
 	};

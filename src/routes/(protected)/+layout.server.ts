@@ -11,7 +11,10 @@ export const load = async (event: ServerLoadEvent) => {
 
 	const data = await db.profile.findUnique({
 		where: { username },
-		select: { friends: true, receivedFriendRequests: true }
+		select: {
+			friends: true,
+			receivedFriendRequests: true
+		}
 	});
 
 	const friends =

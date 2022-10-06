@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { SocketJoin, SocketMessage, SocketOnline, SocketTyping } from './interface';
+import { SocketJoin, SocketMessageToServer, SocketOnline, SocketTyping } from './interface';
 import { ConsoleColor, log } from './log';
 import { SocketServer } from './socket.server';
 import db from './db';
@@ -71,9 +71,16 @@ export class UserSocket {
 		});
 	};
 
-	private onMessage = async (data: SocketMessage) => {
-		this.emitToUser(data.from, 'message', data);
-		this.emitToUser(data.to, 'message', data);
+	private onMessage = async (data: SocketMessageToServer) => {
+		const message = await db.chatMessage.create({
+			data: {
+				text: data.text,
+				from: { connect: { username: data.from } },
+				to: { connect: { username: data.to } }
+			}
+		});
+		this.emitToUser(data.from, 'message', message);
+		this.emitToUser(data.to, 'message', message);
 	};
 
 	private onTyping = async (data: SocketTyping) => {

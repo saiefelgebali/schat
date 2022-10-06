@@ -4,7 +4,7 @@
 	import MessageField from './MessageField.svelte';
 	import MessageBox from './MessageBox.svelte';
 	import { friendsStore } from '$lib/store';
-	import type { Friend, ChatMessage } from '$shared/src/interface';
+	import type { Friend, SocketMessageToServer } from '$shared/src/interface';
 	import { onMount } from 'svelte';
 
 	// State
@@ -23,7 +23,7 @@
 		}
 	});
 
-	let draft: ChatMessage = {
+	let draft: SocketMessageToServer = {
 		text: '',
 		from: data.user.username,
 		to: data.friend.username

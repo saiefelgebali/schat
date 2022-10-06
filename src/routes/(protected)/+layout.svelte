@@ -12,7 +12,14 @@
 
 	onMount(() => {
 		// Add friends to store
-		$friendsStore = data.friends;
+		friendsStore.update((store) => {
+			data.friends.forEach((friend) => {
+				if (!store.find((f) => f.username === friend.username)) {
+					store.push(friend);
+				}
+			});
+			return store;
+		});
 
 		// Add friend requests to store
 		$friendRequestsStore = data.friendRequests;

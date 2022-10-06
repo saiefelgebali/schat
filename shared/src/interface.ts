@@ -1,10 +1,12 @@
 // Sockets
 
+import { ChatMessage } from '@prisma/client';
+
 export interface SocketJoin {
 	username: string;
 }
 
-export interface SocketMessage {
+export interface SocketMessageToServer {
 	from: string;
 	to: string;
 	text: string;
@@ -30,13 +32,6 @@ export interface SocketFriend {
 }
 
 // Other
-
-export interface ChatMessage {
-	text: string;
-	from: string;
-	to: string;
-}
-
 export interface Friend {
 	username: string;
 	online: boolean;
