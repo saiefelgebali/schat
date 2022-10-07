@@ -6,6 +6,7 @@
 	import { friendsStore } from '$lib/store';
 	import type { Friend, SocketMessageToServer } from '$shared/src/interface';
 	import { onMount } from 'svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	// State
 	export let data: {
@@ -52,6 +53,11 @@
 	<div class="flex items-center gap-2" slot="center">
 		<h2 class="font-medium text-gray-900">{friend.username}</h2>
 		<p>{friend.online ? 'Online' : 'Offline'}</p>
+	</div>
+	<div class="flex items-center justify-end" slot="right">
+		<a href={`/chat/${data.friend.username}/video`}>
+			<Icon icon="video" class="cursor-pointer" />
+		</a>
 	</div>
 </Header>
 

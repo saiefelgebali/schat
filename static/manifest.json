@@ -6,7 +6,12 @@
 		{
 			"src": "icon256.png",
 			"type": "image/png",
-			"sizes": "512x512"
+			"sizes": "256x256"
+		},
+		{
+			"src": "icon100.png",
+			"type": "image/png",
+			"sizes": "100x100"
 		}
 	],
 	"background_color": "#f9fafb",
