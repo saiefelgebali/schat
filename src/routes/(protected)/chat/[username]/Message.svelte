@@ -11,10 +11,10 @@
 
 <style lang="postcss">
 	.message {
-		@apply px-4 py-2 bg-gray-200 rounded-md w-max rounded-bl-sm max-w-full;
+		@apply px-4 py-2 bg-gray-200 rounded-2xl w-max rounded-tl-sm max-w-full;
 	}
 
 	.me {
-		@apply bg-blue-800 text-white rounded-bl-md rounded-br-sm self-end;
+		@apply bg-blue-800 text-white rounded-tl-2xl rounded-tr-sm self-end;
 	}
 </style>
