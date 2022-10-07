@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { ChatMessage } from '$lib/interface/chat.message.interface';
+	import type { ChatMessage } from '@prisma/client';
 
 	export let message: ChatMessage;
 	export let user: { username: string };
 </script>
 
-<p class="message break-words" class:me={message.from === user.username}>
+<p class="message break-words" class:me={message.fromUsername === user.username}>
 	{message.text}
 </p>
 

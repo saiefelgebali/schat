@@ -25,7 +25,7 @@ export const load: ServerLoad = async (event) => {
 			OR: { toUsername: { in: [user.username, friend.username] } }
 		},
 		take: 5,
-		orderBy: { timestamp: 'desc' }
+		orderBy: { timestamp: 'asc' }
 	});
 
 	// Check if there is a mutual relationship in place
