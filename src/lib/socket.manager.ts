@@ -6,7 +6,9 @@ import type {
 	SocketTyping,
 	Friend,
 	SocketFriendRequest,
-	SocketFriend
+	SocketFriend,
+	SocketConnectCall,
+	SocketDisconnectCall
 } from '$shared/src/interface';
 import type { ChatMessage } from '@prisma/client';
 
@@ -29,16 +31,25 @@ export class SocketManager {
 		this.socket = io();
 		this.socket.removeAllListeners(); // Ensure any existing event listeners are removed.
 
-		this.socket.on('connect', this.onConnect);
-		this.socket.on('message', this.onMessage);
-		this.socket.on('typing', this.onTyping);
-		this.socket.on('online', this.onOnline);
-		this.socket.on('friendRequest', this.onFriendRequest);
-		this.socket.on('friend', this.onFriend);
+		this.on('connect', this.onConnect);
+		this.on('message', this.onMessage);
+		this.on('typing', this.onTyping);
+		this.on('online', this.onOnline);
+		this.on('friendRequest', this.onFriendRequest);
+		this.on('friend', this.onFriend);
+		this.on('connect-call', this.onConnectCall);
 	}
 
 	emit(event: string, data: any) {
 		this.socket.emit(event, data);
+	}
+
+	on(event: string, handler: (data: any) => void) {
+		this.socket.on(event, handler);
+	}
+
+	off(event: string, handler: (data: any) => void) {
+		this.socket.off(event, handler);
 	}
 
 	// Event handlers
@@ -87,4 +98,9 @@ export class SocketManager {
 			return store;
 		});
 	};
+
+	// Peers
+	onConnectCall = (data: SocketConnectCall) => {};
+
+	onDisconnectCall = (data: SocketDisconnectCall) => {};
 }

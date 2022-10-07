@@ -1,8 +1,15 @@
 import { Socket } from 'socket.io';
-import { SocketJoin, SocketMessageToServer, SocketOnline, SocketTyping } from './interface';
-import { ConsoleColor, log } from './log';
-import { SocketServer } from './socket.server';
-import db from './db';
+import {
+	SocketConnectCall,
+	SocketDisconnectCall,
+	SocketJoin,
+	SocketMessageToServer,
+	SocketOnline,
+	SocketTyping
+} from './interface';
+import { ConsoleColor, log } from './log.js';
+import { SocketServer } from './socket.server.js';
+import db from './db.js';
 
 /**
  * Returns an array of the usernames of a profile's friends.
@@ -29,6 +36,10 @@ export class UserSocket {
 		this.socket.on('join', this.onJoin);
 		this.socket.on('message', this.onMessage);
 		this.socket.on('typing', this.onTyping);
+
+		this.socket.on('connect-call', this.onConnectCall);
+		this.socket.on('disconnect-call', this.onDisconnectCall);
+
 		this.socket.on('disconnect', this.onDisconnect);
 	}
 
@@ -85,6 +96,15 @@ export class UserSocket {
 
 	private onTyping = async (data: SocketTyping) => {
 		this.emitToUser(data.to, 'typing', data);
+	};
+
+	private onConnectCall = async (data: SocketConnectCall) => {
+		console.log('connect call', data.username);
+		this.emitToUser(data.username, 'connect-call', data);
+	};
+
+	private onDisconnectCall = async (data: SocketDisconnectCall) => {
+		this.emitToUser(data.username, 'disconnect-call', data);
 	};
 
 	private onDisconnect = async () => {

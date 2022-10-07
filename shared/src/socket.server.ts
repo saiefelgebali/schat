@@ -1,7 +1,7 @@
 import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import { log } from './log.js';
-import { UserSocket } from './user.socket';
+import { UserSocket } from './user.socket.js';
 
 export class SocketServer {
 	private io: Server;

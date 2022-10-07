@@ -6,3 +6,7 @@ export const configureServer = (server: ViteDevServer) => {
 	const socketServer = new SocketServer();
 	socketServer.attachToServer(server.httpServer);
 };
+
+export const configureExpressPeerServer = (server: ViteDevServer) => {
+	if (!server.httpServer) throw new Error('Could not access HTTP server');
+};
