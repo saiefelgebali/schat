@@ -3,17 +3,20 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { socketManager } from '$lib/store';
 	import type { MediaConnection, Peer } from 'peerjs';
-	import type { SocketConnectCall, SocketDisconnectCall } from '$shared/src/interface';
+	import type { SocketStartCall, SocketDisconnectCall } from '$shared/src/interface';
 
 	export let data: { user: { username: string }; friend: { username: string } };
 
 	let localPeer: Peer;
+	let localId: string;
 	let localVideo: HTMLVideoElement;
 	let localStream: MediaStream;
 
-	let call: MediaConnection;
+	let remoteId: string | null;
 	let remoteVideo: HTMLVideoElement;
-	let remoteStream: MediaStream;
+	let remoteStream: MediaStream | null;
+
+	let status: 'receiving-call' | 'sending-call' | 'in-call' | null = null;
 
 	onMount(async () => {
 		if (!browser) return;
@@ -36,63 +39,88 @@
 			port: 3000
 		});
 
-		localPeer.on('open', handlePeerOpen);
-		localPeer.on('call', handlePeerCall);
+		localPeer.on('open', (id) => (localId = id));
+		localPeer.on('call', answerCall);
 
-		$socketManager?.emit('disconnect-call', {
-			username: data.friend.username
-		});
+		// Reset handlers
+		$socketManager.off('start-call', handleStartCall);
+		$socketManager.off('disconnect-call', handleDisconnectCall);
 
-		$socketManager.on('connect-call', handleConnectCall);
+		$socketManager.on('start-call', handleStartCall);
 		$socketManager.on('disconnect-call', handleDisconnectCall);
 	});
 
-	onDestroy(() => {
-		$socketManager?.emit('disconnect-call', {
-			username: data.friend.username
-		} as SocketDisconnectCall);
-	});
-
 	// Socket event handlers
-	function handleConnectCall(data: SocketConnectCall) {
-		callPeer(data.userId);
+	function handleStartCall(msg: SocketStartCall) {
+		console.log('receiving call from friend');
+		if (msg.from !== data.friend.username) return;
+		remoteId = msg.userId;
+		status = 'receiving-call';
 	}
-	function handleDisconnectCall(data: SocketConnectCall) {
+	function handleDisconnectCall() {
 		console.log('user disconnected');
-		closeVideoStream(remoteVideo, remoteStream);
+		remoteVideo.srcObject = remoteId = remoteStream = status = null;
 	}
 
 	// Peer event handlers
 
-	function handlePeerOpen(id: string) {
-		console.log('Peer open');
-		$socketManager.emit('connect-call', {
-			userId: id,
-			username: data.friend.username
-		} as SocketConnectCall);
+	/**
+	 * Start a call by sending the event via sockets.
+	 */
+	function callUser() {
+		console.log('sending call to friend');
+		$socketManager?.emit('start-call', {
+			userId: localId,
+			from: data.user.username,
+			to: data.friend.username
+		} as SocketStartCall);
 	}
 
-	function handlePeerCall(call: MediaConnection) {
-		console.log('Peer call');
-		call.answer(localStream);
-		call.on('stream', handleCallStream);
-		call.on('close', handleCallClose);
+	/**
+	 * Answer a call request sent via sockets.
+	 */
+	function answerUser() {
+		if (!remoteId) throw new Error('Could not answer call');
+		console.log('answering call from friend');
+		$socketManager?.emit('accept-call', {
+			userId: localId,
+			from: data.user.username,
+			to: data.friend.username
+		} as SocketStartCall);
+		callPeer(remoteId);
 	}
 
+	/**
+	 * Initiate a p2p connection with a user.
+	 */
 	function callPeer(id: string) {
-		console.log('Calling peer');
-		call = localPeer.call(id, localStream);
-		call.on('stream', handleCallStream);
-		call.on('close', handleCallClose);
+		if (!localPeer || !localStream) throw new Error('Cannot call peer');
+		const call = localPeer.call(id, localStream);
+		call.on('stream', (stream) => {
+			remoteStream = stream;
+			showVideoStream(remoteVideo, remoteStream);
+			status = 'in-call';
+		});
 	}
 
-	function handleCallStream(stream: MediaStream) {
-		remoteStream = stream;
-		showVideoStream(remoteVideo, remoteStream);
+	/**
+	 * Receive a call from another peer
+	 */
+	function answerCall(call: MediaConnection) {
+		call.answer(localStream);
+		call.on('stream', (stream) => {
+			remoteStream = stream;
+			showVideoStream(remoteVideo, remoteStream);
+			status = 'in-call';
+		});
 	}
 
-	function handleCallClose() {
-		call.close();
+	/**
+	 * End a call
+	 */
+	function endCall() {
+		$socketManager?.emit('disconnect-call', { username: data.friend.username });
+		remoteVideo.srcObject = remoteId = remoteStream = status = null;
 	}
 
 	// Utility functions
@@ -103,13 +131,6 @@
 			video.play();
 		};
 	}
-
-	async function closeVideoStream(video: HTMLVideoElement, stream: MediaStream) {
-		stream?.getTracks()?.forEach((track) => {
-			track.stop();
-		});
-		video.srcObject = null;
-	}
 </script>
 
 <div class="bg-black">
@@ -118,6 +139,26 @@
 		<video class="friend-video" bind:this={remoteVideo} muted={true}
 			><track kind="captions" /></video
 		>
+
+		{#if !status}
+			<button
+				class="text-white p-4 bg-green-600 absolute center bottom-4 left-1/2"
+				on:click={callUser}>Call</button
+			>
+		{:else if status === 'receiving-call'}
+			<button
+				class="text-white p-4 bg-green-600 absolute center bottom-4 left-1/2"
+				on:click={answerUser}>Answer</button
+			>
+		{:else if status === 'sending-call'}
+			<button class="text-white p-4 bg-green-600 absolute center bottom-4 left-1/2"
+				>Waiting for them to answer</button
+			>
+		{:else}
+			<button on:click={endCall} class="text-white p-4 bg-red-600 absolute center bottom-4 left-1/2"
+				>End Call</button
+			>
+		{/if}
 	</div>
 </div>
 

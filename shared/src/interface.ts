@@ -32,13 +32,15 @@ export interface SocketFriend {
 	username: string;
 }
 
-export interface SocketConnectCall {
-	username: string;
+export interface SocketStartCall {
+	from: string;
+	to: string;
 	userId: string;
 }
 
 export interface SocketDisconnectCall {
-	username: string;
+	from: string;
+	to: string;
 }
 
 // Other

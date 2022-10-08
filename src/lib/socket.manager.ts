@@ -7,7 +7,7 @@ import type {
 	Friend,
 	SocketFriendRequest,
 	SocketFriend,
-	SocketConnectCall,
+	SocketStartCall,
 	SocketDisconnectCall
 } from '$shared/src/interface';
 import type { ChatMessage } from '@prisma/client';
@@ -100,7 +100,7 @@ export class SocketManager {
 	};
 
 	// Peers
-	onConnectCall = (data: SocketConnectCall) => {};
+	onConnectCall = (data: SocketStartCall) => {};
 
 	onDisconnectCall = (data: SocketDisconnectCall) => {};
 }

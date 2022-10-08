@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import {
-	SocketConnectCall,
+	SocketStartCall,
 	SocketDisconnectCall,
 	SocketJoin,
 	SocketMessageToServer,
@@ -32,12 +32,15 @@ export class UserSocket {
 		return this._socket;
 	}
 
+	private call?: { username: string };
+
 	constructor(private _socket: Socket, private server: SocketServer) {
 		this.socket.on('join', this.onJoin);
 		this.socket.on('message', this.onMessage);
 		this.socket.on('typing', this.onTyping);
 
-		this.socket.on('connect-call', this.onConnectCall);
+		this.socket.on('start-call', this.onStartCall);
+		this.socket.on('accept-call', this.onAcceptCall);
 		this.socket.on('disconnect-call', this.onDisconnectCall);
 
 		this.socket.on('disconnect', this.onDisconnect);
@@ -98,13 +101,20 @@ export class UserSocket {
 		this.emitToUser(data.to, 'typing', data);
 	};
 
-	private onConnectCall = async (data: SocketConnectCall) => {
-		this.emitToUser(data.username, 'connect-call', data);
+	private onStartCall = async (data: SocketStartCall) => {
+		console.log(`${this.username} is calling ${data.to}`);
+		this.call = { username: data.to };
+		this.emitToUser(data.to, 'start-call', data);
+	};
+
+	private onAcceptCall = async (data: SocketStartCall) => {
+		this.call = { username: data.from };
 	};
 
 	private onDisconnectCall = async (data: SocketDisconnectCall) => {
-		console.log('disconnect call');
-		this.emitToUser(data.username, 'disconnect-call', data);
+		console.log(`${this.username} stopped calling ${data.to}`);
+		this.call = null;
+		this.emitToUser(data.to, 'disconnect-call', data);
 	};
 
 	private onDisconnect = async () => {
@@ -113,6 +123,14 @@ export class UserSocket {
 		this.server.disconnectUser(this);
 
 		log(`'${this.username}' disconnected.`, { color: ConsoleColor.FgYellow });
+
+		// Disconnect from any calls
+		console.log(this.call);
+		if (this.call)
+			this.emitToUser(this.call.username, 'disconnect-call', {
+				from: this.username,
+				to: this.call.username
+			} as SocketDisconnectCall);
 
 		// Alert friends that you disconnected
 		const friends = await getProfileFriends(this.username);
