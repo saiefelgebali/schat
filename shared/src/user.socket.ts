@@ -99,11 +99,11 @@ export class UserSocket {
 	};
 
 	private onConnectCall = async (data: SocketConnectCall) => {
-		console.log('connect call', data.username);
 		this.emitToUser(data.username, 'connect-call', data);
 	};
 
 	private onDisconnectCall = async (data: SocketDisconnectCall) => {
+		console.log('disconnect call');
 		this.emitToUser(data.username, 'disconnect-call', data);
 	};
 
