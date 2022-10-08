@@ -59,7 +59,7 @@
 	}
 	function handleDisconnectCall() {
 		console.log('user disconnected');
-		remoteVideo.srcObject = remoteId = remoteStream = status = null;
+		closeCall();
 	}
 
 	// Peer event handlers
@@ -74,6 +74,7 @@
 			from: data.user.username,
 			to: data.friend.username
 		} as SocketStartCall);
+		status = 'sending-call';
 	}
 
 	/**
@@ -119,7 +120,17 @@
 	 * End a call
 	 */
 	function endCall() {
-		$socketManager?.emit('disconnect-call', { username: data.friend.username });
+		$socketManager?.emit('disconnect-call', {
+			from: data.user.username,
+			to: data.friend.username
+		} as SocketDisconnectCall);
+		closeCall();
+	}
+
+	function closeCall() {
+		remoteStream?.getTracks().forEach((track) => {
+			track.stop();
+		});
 		remoteVideo.srcObject = remoteId = remoteStream = status = null;
 	}
 
@@ -140,29 +151,25 @@
 			><track kind="captions" /></video
 		>
 
-		{#if !status}
-			<button
-				class="text-white p-4 bg-green-600 absolute center bottom-4 left-1/2"
-				on:click={callUser}>Call</button
-			>
-		{:else if status === 'receiving-call'}
-			<button
-				class="text-white p-4 bg-green-600 absolute center bottom-4 left-1/2"
-				on:click={answerUser}>Answer</button
-			>
-		{:else if status === 'sending-call'}
-			<button class="text-white p-4 bg-green-600 absolute center bottom-4 left-1/2"
-				>Waiting for them to answer</button
-			>
-		{:else}
-			<button on:click={endCall} class="text-white p-4 bg-red-600 absolute center bottom-4 left-1/2"
-				>End Call</button
-			>
-		{/if}
+		<div class="absolute flex bottom-8 w-full  justify-center">
+			{#if !status}
+				<button class="call-button bg-green-600" on:click={callUser}>Call</button>
+			{:else if status === 'receiving-call'}
+				<button class="call-button bg-green-600" on:click={answerUser}>Answer</button>
+			{:else if status === 'sending-call'}
+				<button class="call-button bg-green-600">Calling</button>
+			{:else}
+				<button on:click={endCall} class="call-button bg-red-600">End</button>
+			{/if}
+		</div>
 	</div>
 </div>
 
-<style>
+<style lang="postcss">
+	.call-button {
+		@apply text-white p-4 w-20 rounded-full aspect-square;
+	}
+
 	.my-video {
 		border-radius: 1rem;
 		position: absolute;
@@ -173,6 +180,5 @@
 
 	.friend-video {
 		width: 100%;
-		background-color: gray;
 	}
 </style>
