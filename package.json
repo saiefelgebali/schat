@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"start": "node ./server",
-		"peer": "peerjs --port 5001",
+		"peer": "peerjs --port 3000",
 		"dev": "vite dev --port 5000 --host",
 		"build": "vite build && tsc -p ./shared",
 		"preview": "vite preview",
@@ -47,6 +47,7 @@
 		"@types/cookie": "^0.5.1",
 		"bcrypt": "^5.0.1",
 		"cookie": "^0.5.0",
+		"dotenv": "^16.0.3",
 		"express": "^4.18.1",
 		"luxon": "^3.0.4",
 		"peer": "^0.6.1",
