@@ -61,6 +61,8 @@ export class SocketManager {
 	};
 
 	onMessage = (data: ChatMessage) => {
+		// Convert timestamp to JSDate
+		data.timestamp = new Date(data.timestamp);
 		if (data.fromUsername === this.username) {
 			updateFriend(data.toUsername, (friend) => {
 				friend.messages = [...friend.messages, data];
