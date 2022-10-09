@@ -61,16 +61,30 @@ export class UserSocket {
         this.onTyping = (data) => __awaiter(this, void 0, void 0, function* () {
             this.emitToUser(data.to, 'typing', data);
         });
-        this.onConnectCall = (data) => __awaiter(this, void 0, void 0, function* () {
-            this.emitToUser(data.username, 'connect-call', data);
+        this.onStartCall = (data) => __awaiter(this, void 0, void 0, function* () {
+            log(`${this.username} is calling ${data.to}`, { color: ConsoleColor.FgMagenta });
+            this.call = { username: data.to };
+            this.emitToUser(data.to, 'start-call', data);
+        });
+        this.onAcceptCall = (data) => __awaiter(this, void 0, void 0, function* () {
+            log(`${this.username} accepted call from ${data.to}`, { color: ConsoleColor.FgMagenta });
+            this.call = { username: data.from };
         });
         this.onDisconnectCall = (data) => __awaiter(this, void 0, void 0, function* () {
-            this.emitToUser(data.username, 'disconnect-call', data);
+            log(`${this.username} stopped calling ${data.to}`, { color: ConsoleColor.FgMagenta });
+            this.call = null;
+            this.emitToUser(data.to, 'disconnect-call', data);
         });
         this.onDisconnect = () => __awaiter(this, void 0, void 0, function* () {
             this.socket.rooms.clear();
             this.server.disconnectUser(this);
             log(`'${this.username}' disconnected.`, { color: ConsoleColor.FgYellow });
+            // Disconnect from any calls
+            if (this.call)
+                this.emitToUser(this.call.username, 'disconnect-call', {
+                    from: this.username,
+                    to: this.call.username
+                });
             // Alert friends that you disconnected
             const friends = yield getProfileFriends(this.username);
             friends.forEach((f) => this.emitToUser(f, 'online', { username: this.username, status: false }));
@@ -78,7 +92,8 @@ export class UserSocket {
         this.socket.on('join', this.onJoin);
         this.socket.on('message', this.onMessage);
         this.socket.on('typing', this.onTyping);
-        this.socket.on('connect-call', this.onConnectCall);
+        this.socket.on('start-call', this.onStartCall);
+        this.socket.on('accept-call', this.onAcceptCall);
         this.socket.on('disconnect-call', this.onDisconnectCall);
         this.socket.on('disconnect', this.onDisconnect);
     }

@@ -6,6 +6,7 @@ export declare class UserSocket {
     private _username;
     get username(): string;
     get socket(): Socket;
+    private call?;
     constructor(_socket: Socket, server: SocketServer);
     /**
      * Emit an event to a user on the socket server
@@ -14,7 +15,8 @@ export declare class UserSocket {
     private onJoin;
     private onMessage;
     private onTyping;
-    private onConnectCall;
+    private onStartCall;
+    private onAcceptCall;
     private onDisconnectCall;
     private onDisconnect;
 }

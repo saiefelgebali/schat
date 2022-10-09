@@ -102,18 +102,18 @@ export class UserSocket {
 	};
 
 	private onStartCall = async (data: SocketStartCall) => {
-		console.log(`${this.username} is calling ${data.to}`);
+		log(`${this.username} is calling ${data.to}`, { color: ConsoleColor.FgMagenta });
 		this.call = { username: data.to };
 		this.emitToUser(data.to, 'start-call', data);
 	};
 
 	private onAcceptCall = async (data: SocketStartCall) => {
-		console.log(`${this.username} accepted call from ${data.to}`);
+		log(`${this.username} accepted call from ${data.to}`, { color: ConsoleColor.FgMagenta });
 		this.call = { username: data.from };
 	};
 
 	private onDisconnectCall = async (data: SocketDisconnectCall) => {
-		console.log(`${this.username} stopped calling ${data.to}`);
+		log(`${this.username} stopped calling ${data.to}`, { color: ConsoleColor.FgMagenta });
 		this.call = null;
 		this.emitToUser(data.to, 'disconnect-call', data);
 	};
@@ -126,7 +126,6 @@ export class UserSocket {
 		log(`'${this.username}' disconnected.`, { color: ConsoleColor.FgYellow });
 
 		// Disconnect from any calls
-		console.log(this.call);
 		if (this.call)
 			this.emitToUser(this.call.username, 'disconnect-call', {
 				from: this.username,
