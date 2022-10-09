@@ -39,6 +39,8 @@
 			port: import.meta.env.VITE_PUBLIC_PEER_PORT
 		});
 
+		console.log('Connecting to peer server', import.meta.env.VITE_PUBLIC_PEER_HOST);
+
 		localPeer.on('open', (id) => (localId = id));
 		localPeer.on('call', answerCall);
 
