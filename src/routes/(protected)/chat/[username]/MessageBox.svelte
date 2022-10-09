@@ -1,28 +1,26 @@
 <script lang="ts">
-	import { tick } from 'svelte';
 	import Message from './Message.svelte';
 	import type { Friend } from '$shared/src/interface';
+	import type { ChatMessage } from '@prisma/client';
+	import { onMount } from 'svelte';
+	import { tick } from 'svelte';
 
 	export let user: { username: string };
 	export let friend: Friend;
+	export let messages: ChatMessage[];
 
 	let statusBox: HTMLElement;
 
-	async function scrollToBottom() {
-		if (!statusBox) return;
-
-		// Scroll to end of message box after DOM update
+	onMount(async () => {
 		await tick();
+		console.log('scrolling to status box');
 		statusBox.scrollIntoView();
-	}
-
-	// Scroll to bottom
-	$: if (friend.messages.length > 0) scrollToBottom();
+	});
 </script>
 
 <section class="container py-8 mb-20">
 	<div class="flex flex-col gap-4">
-		{#each friend.messages as message}
+		{#each messages as message}
 			<Message {user} {message} />
 		{/each}
 	</div>

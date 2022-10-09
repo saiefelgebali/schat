@@ -2,6 +2,7 @@ import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { Friend } from '$shared/src/interface';
 import { authorizedRouteGuard } from '$lib/route.guards';
 import db from '$shared/src/db';
+import type { ChatMessage } from '@prisma/client';
 
 export const load = async (event: ServerLoadEvent) => {
 	authorizedRouteGuard(event);
@@ -17,16 +18,33 @@ export const load = async (event: ServerLoadEvent) => {
 		}
 	});
 
+	if (!data) throw new Error();
+
+	// Get all friend messages
+	const friendMessages: { [username: string]: ChatMessage[] } = {};
+	await Promise.all(
+		data.friends.map(async (friend) => {
+			const messages = await db.chatMessage.findMany({
+				where: {
+					fromUsername: { in: [username, friend.username] },
+					OR: { toUsername: { in: [username, friend.username] } }
+				},
+				orderBy: { timestamp: 'asc' }
+			});
+			friendMessages[friend.username] = messages;
+		})
+	);
+
 	const friends =
-		data?.friends.map<Friend>((f) => ({
+		data.friends.map<Friend>((f) => ({
 			username: f.username,
-			messages: [],
+			messages: friendMessages[f.username],
 			online: false,
 			typing: false
 		})) || [];
 
 	const friendRequests =
-		data?.receivedFriendRequests.map<{ username: string }>((fr) => ({
+		data.receivedFriendRequests.map<{ username: string }>((fr) => ({
 			username: fr.fromUsername
 		})) || [];
 

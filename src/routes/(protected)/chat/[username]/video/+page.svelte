@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { socketManager } from '$lib/store';
 	import type { MediaConnection, Peer } from 'peerjs';
 	import type { SocketStartCall, SocketDisconnectCall } from '$shared/src/interface';
@@ -48,6 +48,10 @@
 
 		$socketManager.on('start-call', handleStartCall);
 		$socketManager.on('disconnect-call', handleDisconnectCall);
+	});
+
+	onDestroy(() => {
+		stopStreaming();
 	});
 
 	// Socket event handlers
@@ -125,6 +129,12 @@
 			to: data.friend.username
 		} as SocketDisconnectCall);
 		closeCall();
+	}
+
+	function stopStreaming() {
+		localStream.getTracks().forEach((track) => {
+			track.stop();
+		});
 	}
 
 	function closeCall() {

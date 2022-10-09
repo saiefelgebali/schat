@@ -54,7 +54,7 @@
 
 {#if friend}
 	<div>
-		<MessageBox user={data.user} {friend} />
+		<MessageBox user={data.user} {friend} messages={friend.messages} />
 	</div>
 
 	<div class="border-t pt-4 pb-6 fixed bottom-0 left-0 right-0 z-20 bg-gray-50">
