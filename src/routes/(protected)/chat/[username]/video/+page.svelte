@@ -163,7 +163,7 @@
 <div class="">
 	<div class="container p-0 min-h-screen flex relative">
 		<video class="my-video" bind:this={localVideo} autoplay playsinline muted />
-		<video class="friend-video" bind:this={remoteVideo} autoplay playsinline />
+		<video class="friend-video" bind:this={remoteVideo} autoplay playsinline muted />
 
 		<div class="absolute flex bottom-8 w-full  justify-center">
 			{#if !status}
