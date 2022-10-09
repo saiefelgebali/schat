@@ -10,7 +10,7 @@
 		<div class="flex justify-between items-center">
 			<div class="w-full">
 				{#if logo}
-					<a href="/">
+					<a href="/" target="_self">
 						<Logo />
 					</a>
 				{/if}

@@ -160,10 +160,10 @@
 
 <div class="bg-black">
 	<div class="container p-0 min-h-screen flex relative">
-		<video class="my-video" bind:this={localVideo} muted={true}><track kind="captions" /></video>
-		<video class="friend-video" bind:this={remoteVideo} muted={true}
+		<video class="my-video" bind:this={localVideo} autoplay={true} playsinline={true} muted={true}
 			><track kind="captions" /></video
 		>
+		<video class="friend-video" bind:this={remoteVideo}><track kind="captions" /></video>
 
 		<div class="absolute flex bottom-8 w-full  justify-center">
 			{#if !status}

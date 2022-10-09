@@ -10,18 +10,8 @@
 
 		if (res.success) {
 			// Add new friend to friend's list
-			const newFriend = res.data.friend;
-			$friendsStore = [
-				...$friendsStore,
-				{ username: newFriend.username, online: false, typing: false, messages: [] }
-			];
-
-			// Remove friend from requests
-			$friendRequestsStore = $friendRequestsStore.filter(
-				(fr) => fr.username !== newFriend.username
-			);
-
-			$socketManager?.emit('friend', { username: newFriend.username } as SocketFriend);
+			$socketManager?.emit('friend', { username: res.data.friend.username } as SocketFriend);
+			window.location.reload();
 		}
 
 		if (res.error) {
