@@ -209,9 +209,12 @@
 		top: 1rem;
 		left: 1rem;
 		width: 200px;
+		max-width: 30vw;
 	}
 
 	.friend-video {
+		background-color: gray;
 		width: 100%;
+		max-height: 100vh;
 	}
 </style>
