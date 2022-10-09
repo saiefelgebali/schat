@@ -23,7 +23,10 @@
 
 		// Try to access the user's media devices
 		try {
-			localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+			localStream = await navigator.mediaDevices.getUserMedia({
+				video: { facingMode: 'user' },
+				audio: true
+			});
 		} catch {
 			localStream = new MediaStream();
 		}
@@ -160,10 +163,12 @@
 
 <div class="">
 	<div class="container p-0 min-h-screen flex relative">
-		<video class="my-video" bind:this={localVideo} autoplay={true} playsinline={true} muted={true}
+		<video class="my-video" bind:this={localVideo} autoplay playsinline muted
 			><track kind="captions" /></video
 		>
-		<video class="friend-video" bind:this={remoteVideo}><track kind="captions" /></video>
+		<video class="friend-video" bind:this={remoteVideo} autoplay playsinline
+			><track kind="captions" /></video
+		>
 
 		<div class="absolute flex bottom-8 w-full  justify-center">
 			{#if !status}
