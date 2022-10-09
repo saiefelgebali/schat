@@ -108,6 +108,7 @@ export class UserSocket {
 	};
 
 	private onAcceptCall = async (data: SocketStartCall) => {
+		console.log(`${this.username} accepted call from ${data.to}`);
 		this.call = { username: data.from };
 	};
 

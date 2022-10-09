@@ -1,15 +1,14 @@
 <script lang="ts">
 	import type { ChatMessage } from '@prisma/client';
 	import { DateTime } from 'luxon';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	export let message: ChatMessage;
 	export let user: { username: string };
 	let self: HTMLDivElement;
 
-	onMount(() => {
-		if (!self) return;
-		console.log('message mounted');
+	onMount(async () => {
+		await tick();
 		self.scrollIntoView();
 	});
 

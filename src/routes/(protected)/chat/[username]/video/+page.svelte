@@ -16,7 +16,7 @@
 	let remoteVideo: HTMLVideoElement;
 	let remoteStream: MediaStream | null;
 
-	let status: 'receiving-call' | 'sending-call' | 'in-call' | null = null;
+	let status: 'receiving-call' | 'sending-call' | 'connecting' | 'in-call' | null = null;
 
 	onMount(async () => {
 		if (!browser) return;
@@ -101,6 +101,7 @@
 	function callPeer(id: string) {
 		if (!localPeer || !localStream) throw new Error('Cannot call peer');
 		const call = localPeer.call(id, localStream);
+		status = 'connecting';
 		call.on('stream', (stream) => {
 			remoteStream = stream;
 			showVideoStream(remoteVideo, remoteStream);
@@ -113,6 +114,7 @@
 	 */
 	function answerCall(call: MediaConnection) {
 		call.answer(localStream);
+		status = 'connecting';
 		call.on('stream', (stream) => {
 			remoteStream = stream;
 			showVideoStream(remoteVideo, remoteStream);
@@ -132,7 +134,7 @@
 	}
 
 	function stopStreaming() {
-		localStream.getTracks().forEach((track) => {
+		localStream?.getTracks().forEach((track) => {
 			track.stop();
 		});
 	}
@@ -168,6 +170,8 @@
 				<button class="call-button bg-green-600" on:click={answerUser}>Answer</button>
 			{:else if status === 'sending-call'}
 				<button class="call-button bg-green-600">Calling</button>
+			{:else if status === 'connecting'}
+				<button class="call-button bg-green-600">Loading</button>
 			{:else}
 				<button on:click={endCall} class="call-button bg-red-600">End</button>
 			{/if}
@@ -177,7 +181,7 @@
 
 <style lang="postcss">
 	.call-button {
-		@apply text-white p-4 w-20 rounded-full aspect-square;
+		@apply text-white p-4 w-20 rounded-full aspect-square text-xs;
 	}
 
 	.my-video {

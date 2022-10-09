@@ -13,7 +13,6 @@
 
 	onMount(async () => {
 		await tick();
-		console.log('scrolling to status box');
 		statusBox.scrollIntoView();
 	});
 </script>
