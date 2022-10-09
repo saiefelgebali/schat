@@ -35,8 +35,8 @@
 		const { Peer } = await import('peerjs');
 
 		localPeer = new Peer({
-			host: '/',
-			port: 3000
+			host: import.meta.env.VITE_PUBLIC_PEER_HOST,
+			port: import.meta.env.VITE_PUBLIC_PEER_PORT
 		});
 
 		localPeer.on('open', (id) => (localId = id));
