@@ -24,11 +24,16 @@
 
 		// Try to access the user's media devices
 		try {
+			localVideo.setAttribute('autoplay', '');
+			localVideo.setAttribute('muted', '');
+			localVideo.setAttribute('playsinline', '');
 			localStream = await navigator.mediaDevices.getUserMedia({
 				video: true,
 				audio: true
 			});
-		} catch {
+		} catch (e) {
+			alert('Could not get user media');
+			alert(e);
 			localStream = new MediaStream();
 		}
 
@@ -156,9 +161,6 @@
 
 	async function showVideoStream(video: HTMLVideoElement, stream: MediaStream) {
 		video.srcObject = stream;
-		video.setAttribute('autoplay', '');
-		video.setAttribute('muted', '');
-		video.setAttribute('playsinline', '');
 		video.onloadedmetadata = () => {
 			video.play();
 		};
