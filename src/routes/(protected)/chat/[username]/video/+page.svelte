@@ -175,7 +175,13 @@
 	<div class="container p-0 min-h-screen flex relative">
 		<video class="my-video" bind:this={localVideo} autoplay playsinline muted />
 		<!-- svelte-ignore a11y-media-has-caption -->
-		<video class="friend-video" bind:this={remoteVideo} on:click={unmuteVideo} />
+		<video
+			class="friend-video"
+			bind:this={remoteVideo}
+			autoplay
+			playsinline
+			on:click={unmuteVideo}
+		/>
 
 		<div class="absolute flex bottom-8 w-full  justify-center">
 			{#if !status}
