@@ -15,6 +15,7 @@
 	let remoteId: string | null;
 	let remoteVideo: HTMLVideoElement;
 	let remoteStream: MediaStream | null;
+	let remoteMuted = true;
 
 	let status: 'receiving-call' | 'sending-call' | 'connecting' | 'in-call' | null = null;
 
@@ -25,7 +26,7 @@
 		try {
 			localStream = await navigator.mediaDevices.getUserMedia({
 				video: true,
-				audio: false
+				audio: true
 			});
 		} catch {
 			localStream = new MediaStream();
@@ -110,7 +111,6 @@
 		call.on('stream', (stream) => {
 			remoteStream = stream;
 			showVideoStream(remoteVideo, remoteStream);
-			remoteVideo.muted = false;
 			status = 'in-call';
 		});
 	}
@@ -124,7 +124,6 @@
 		call.on('stream', (stream) => {
 			remoteStream = stream;
 			showVideoStream(remoteVideo, remoteStream);
-			remoteVideo.muted = false;
 			status = 'in-call';
 		});
 	}
@@ -157,16 +156,24 @@
 
 	async function showVideoStream(video: HTMLVideoElement, stream: MediaStream) {
 		video.srcObject = stream;
+		video.setAttribute('autoplay', '');
+		video.setAttribute('muted', '');
+		video.setAttribute('playsinline', '');
 		video.onloadedmetadata = () => {
 			video.play();
 		};
+	}
+
+	function unmuteVideo() {
+		console.log('unmuted video');
 	}
 </script>
 
 <div class="">
 	<div class="container p-0 min-h-screen flex relative">
 		<video class="my-video" bind:this={localVideo} autoplay playsinline muted />
-		<video class="friend-video" bind:this={remoteVideo} autoplay playsinline muted />
+		<!-- svelte-ignore a11y-media-has-caption -->
+		<video class="friend-video" bind:this={remoteVideo} on:click={unmuteVideo} />
 
 		<div class="absolute flex bottom-8 w-full  justify-center">
 			{#if !status}
