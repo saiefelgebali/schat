@@ -24,16 +24,16 @@
 
 		// Try to access the user's media devices
 		try {
-			localVideo.setAttribute('autoplay', '');
-			localVideo.setAttribute('muted', '');
-			localVideo.setAttribute('playsinline', '');
+			localVideo.setAttribute('autoplay', 'true');
+			localVideo.setAttribute('muted', 'true');
+			localVideo.setAttribute('playsinline', 'true');
 			localStream = await navigator.mediaDevices.getUserMedia({
 				video: true,
-				audio: true
+				audio: false
 			});
+			alert('Got user media');
 		} catch (e) {
 			alert('Could not get user media');
-			alert(e);
 			localStream = new MediaStream();
 		}
 
