@@ -158,7 +158,7 @@
 	}
 </script>
 
-<div class="bg-black">
+<div class="">
 	<div class="container p-0 min-h-screen flex relative">
 		<video class="my-video" bind:this={localVideo} autoplay={true} playsinline={true} muted={true}
 			><track kind="captions" /></video
