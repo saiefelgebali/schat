@@ -15,7 +15,6 @@
 	let remoteId: string | null;
 	let remoteVideo: HTMLVideoElement;
 	let remoteStream: MediaStream | null;
-	let remoteMuted = true;
 
 	let status: 'receiving-call' | 'sending-call' | 'connecting' | 'in-call' | null = null;
 
@@ -29,11 +28,10 @@
 			localVideo.setAttribute('playsinline', 'true');
 			localStream = await navigator.mediaDevices.getUserMedia({
 				video: true,
-				audio: false
+				audio: true
 			});
-			alert('Got user media');
 		} catch (e) {
-			alert('Could not get user media');
+			alert('Could not access the camera');
 			localStream = new MediaStream();
 		}
 
@@ -168,6 +166,7 @@
 
 	function unmuteVideo() {
 		console.log('unmuted video');
+		remoteVideo.muted = false;
 	}
 </script>
 
