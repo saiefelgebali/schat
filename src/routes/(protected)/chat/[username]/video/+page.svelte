@@ -109,6 +109,7 @@
 		call.on('stream', (stream) => {
 			remoteStream = stream;
 			showVideoStream(remoteVideo, remoteStream);
+			remoteVideo.muted = false;
 			status = 'in-call';
 		});
 	}
@@ -122,6 +123,7 @@
 		call.on('stream', (stream) => {
 			remoteStream = stream;
 			showVideoStream(remoteVideo, remoteStream);
+			remoteVideo.muted = false;
 			status = 'in-call';
 		});
 	}
