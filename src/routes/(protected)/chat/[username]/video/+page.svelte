@@ -24,7 +24,8 @@
 		// Try to access the user's media devices
 		try {
 			localStream = await navigator.mediaDevices.getUserMedia({
-				video: { facingMode: 'user' }
+				video: true,
+				audio: false
 			});
 		} catch {
 			localStream = new MediaStream();
