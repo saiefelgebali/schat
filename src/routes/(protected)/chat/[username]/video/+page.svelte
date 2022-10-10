@@ -4,6 +4,9 @@
 	import { socketManager } from '$lib/store';
 	import type { MediaConnection, Peer } from 'peerjs';
 	import type { SocketStartCall, SocketDisconnectCall } from '$shared/src/interface';
+	import MyVideo from './MyVideo.svelte';
+	import FriendVideo from './FriendVideo.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	export let data: { user: { username: string }; friend: { username: string } };
 
@@ -31,7 +34,7 @@
 				audio: true
 			});
 		} catch (e) {
-			alert('Could not access the camera');
+			// alert('Could not access the camera');
 			localStream = new MediaStream();
 		}
 
@@ -60,6 +63,7 @@
 	});
 
 	onDestroy(() => {
+		endCall();
 		stopStreaming();
 	});
 
@@ -68,6 +72,9 @@
 		console.log('receiving call from friend');
 		if (msg.from !== data.friend.username) return;
 		remoteId = msg.userId;
+		if (status === 'sending-call') {
+			return answerUser();
+		}
 		status = 'receiving-call';
 	}
 	function handleDisconnectCall() {
@@ -152,7 +159,8 @@
 		remoteStream?.getTracks().forEach((track) => {
 			track.stop();
 		});
-		remoteVideo.srcObject = remoteId = remoteStream = status = null;
+		if (remoteVideo) remoteVideo.srcObject = null;
+		remoteId = remoteStream = status = null;
 	}
 
 	// Utility functions
@@ -163,62 +171,74 @@
 			video.play();
 		};
 	}
-
-	function unmuteVideo() {
-		console.log('unmuted video');
-		remoteVideo.muted = false;
-	}
 </script>
 
-<div class="">
-	<div class="container p-0 min-h-screen flex relative">
-		<video class="my-video" bind:this={localVideo} autoplay playsinline muted />
+<div class="bg-black">
+	<div class="container p-0  min-h-screen flex relative">
 		<!-- svelte-ignore a11y-media-has-caption -->
-		<video
-			class="friend-video"
-			bind:this={remoteVideo}
-			autoplay
-			playsinline
-			on:click={unmuteVideo}
-		/>
+		<FriendVideo self={remoteVideo} />
+		<MyVideo self={localVideo} />
 
-		<div class="absolute flex bottom-8 w-full  justify-center">
-			{#if !status}
-				<button class="call-button bg-green-600" on:click={callUser}>Call</button>
-			{:else if status === 'receiving-call'}
-				<button class="call-button bg-green-600" on:click={answerUser}>Answer</button>
-			{:else if status === 'sending-call'}
-				<button class="call-button bg-green-600">Calling</button>
-			{:else if status === 'connecting'}
-				<button class="call-button bg-green-600">Loading</button>
-			{:else}
-				<button on:click={endCall} class="call-button bg-red-600">End</button>
-			{/if}
+		<div class="absolute flex justify-center bottom-24 w-full">
+			<div class="max-w-md w-full">
+				{#if !status}
+					<div class="w-full flex justify-center">
+						<button class="call-button bg-green-600" on:click={callUser}
+							><Icon icon="phone" class="fill-white" /></button
+						>
+					</div>
+				{:else if status === 'receiving-call'}
+					<div class="w-full">
+						<div class="flex justify-center mb-8">
+							<p class="text-white">{data.friend.username} is calling you...</p>
+						</div>
+						<div class="flex w-full justify-between">
+							<button class="call-button bg-green-600" on:click={answerUser}
+								><Icon icon="phone" class="fill-white" /></button
+							>
+							<button class="call-button bg-red-600" on:click={endCall}
+								><Icon icon="phone" class="fill-white" /></button
+							>
+						</div>
+					</div>
+				{:else if status === 'sending-call'}
+					<div class="w-full">
+						<div class="flex justify-center mb-8">
+							<p class="text-white">Calling {data.friend.username}...</p>
+						</div>
+						<div class="flex w-full justify-center">
+							<button class="call-button bg-red-600" on:click={endCall}
+								><Icon icon="phone" class="fill-white" /></button
+							>
+						</div>
+					</div>
+				{:else if status === 'connecting'}
+					<div class="w-full">
+						<div class="flex justify-center mb-8">
+							<p class="text-white">Connecting...</p>
+						</div>
+						<div class="flex w-full justify-center">
+							<button class="call-button bg-red-600" on:click={endCall}
+								><Icon icon="phone" class="fill-white" /></button
+							>
+						</div>
+					</div>
+				{:else}
+					<div class="w-full">
+						<div class="flex w-full justify-center">
+							<button class="call-button bg-red-600" on:click={endCall}
+								><Icon icon="phone" class="fill-white" /></button
+							>
+						</div>
+					</div>
+				{/if}
+			</div>
 		</div>
 	</div>
 </div>
 
 <style lang="postcss">
 	.call-button {
-		@apply text-white p-4 w-20 rounded-full aspect-square text-xs;
-	}
-
-	.my-video {
-		/* Flip video */
-		transform: rotateY(180deg);
-		-webkit-transform: rotateY(180deg); /* Safari and Chrome */
-		-moz-transform: rotateY(180deg); /* Firefox */
-
-		border-radius: 1rem;
-		position: absolute;
-		top: 1rem;
-		left: 1rem;
-		width: 200px;
-		max-width: 30vw;
-	}
-
-	.friend-video {
-		width: 100%;
-		max-height: 100vh;
+		@apply text-white p-6 rounded-full aspect-square flex justify-center items-center;
 	}
 </style>
