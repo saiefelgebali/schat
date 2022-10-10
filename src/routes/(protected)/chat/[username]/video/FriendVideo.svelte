@@ -3,7 +3,7 @@
 </script>
 
 <!-- svelte-ignore a11y-media-has-caption -->
-<video class="w-full" bind:this={self} autoplay playsinline />
+<video class="w-full -z-50" bind:this={self} autoplay playsinline />
 
 <style>
 	video {

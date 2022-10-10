@@ -2,13 +2,7 @@
 	export let self: HTMLVideoElement | undefined = undefined;
 </script>
 
-<video
-	class="bg-gray-600 rounded-lg absolute left-4 top-4 z-50"
-	bind:this={self}
-	autoplay
-	playsinline
-	muted
-/>
+<video class="rounded-lg absolute left-4 top-4 z-50" bind:this={self} autoplay playsinline muted />
 
 <style>
 	video {

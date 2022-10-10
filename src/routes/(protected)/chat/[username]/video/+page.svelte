@@ -10,6 +10,8 @@
 
 	export let data: { user: { username: string }; friend: { username: string } };
 
+	const buttonSize = 20;
+
 	let localPeer: Peer;
 	let localId: string;
 	let localVideo: HTMLVideoElement;
@@ -173,53 +175,78 @@
 	}
 </script>
 
-<div class="bg-black">
+<div>
 	<div class="container p-0  min-h-screen flex relative">
 		<!-- svelte-ignore a11y-media-has-caption -->
 		<FriendVideo bind:self={remoteVideo} />
 		<MyVideo bind:self={localVideo} />
 
-		<div class="absolute flex justify-center bottom-24 w-full">
+		<div class="container absolute flex justify-center bottom-24 w-full">
 			<div class="max-w-md w-full">
 				{#if !status}
 					<div class="w-full flex justify-center">
 						<button class="call-button bg-green-600" on:click={callUser}
-							><Icon icon="phone" class="fill-white" /></button
+							><Icon
+								width={buttonSize}
+								height={buttonSize}
+								icon="phone"
+								class="fill-white"
+							/></button
 						>
 					</div>
 				{:else if status === 'receiving-call'}
 					<div class="w-full">
 						<div class="flex justify-center mb-8">
-							<p class="text-white">{data.friend.username} is calling you...</p>
+							<p>{data.friend.username} is calling you...</p>
 						</div>
 						<div class="flex w-full justify-between">
 							<button class="call-button bg-green-600" on:click={answerUser}
-								><Icon icon="phone" class="fill-white" /></button
+								><Icon
+									width={buttonSize}
+									height={buttonSize}
+									icon="phone"
+									class="fill-white"
+								/></button
 							>
 							<button class="call-button bg-red-600" on:click={endCall}
-								><Icon icon="phone" class="fill-white" /></button
+								><Icon
+									width={buttonSize}
+									height={buttonSize}
+									icon="phone"
+									class="fill-white"
+								/></button
 							>
 						</div>
 					</div>
 				{:else if status === 'sending-call'}
 					<div class="w-full">
 						<div class="flex justify-center mb-8">
-							<p class="text-white">Calling {data.friend.username}...</p>
+							<p>Calling {data.friend.username}...</p>
 						</div>
 						<div class="flex w-full justify-center">
 							<button class="call-button bg-red-600" on:click={endCall}
-								><Icon icon="phone" class="fill-white" /></button
+								><Icon
+									width={buttonSize}
+									height={buttonSize}
+									icon="phone"
+									class="fill-white"
+								/></button
 							>
 						</div>
 					</div>
 				{:else if status === 'connecting'}
 					<div class="w-full">
 						<div class="flex justify-center mb-8">
-							<p class="text-white">Connecting...</p>
+							<p>Connecting...</p>
 						</div>
 						<div class="flex w-full justify-center">
 							<button class="call-button bg-red-600" on:click={endCall}
-								><Icon icon="phone" class="fill-white" /></button
+								><Icon
+									width={buttonSize}
+									height={buttonSize}
+									icon="phone"
+									class="fill-white"
+								/></button
 							>
 						</div>
 					</div>
@@ -227,7 +254,12 @@
 					<div class="w-full">
 						<div class="flex w-full justify-center">
 							<button class="call-button bg-red-600" on:click={endCall}
-								><Icon icon="phone" class="fill-white" /></button
+								><Icon
+									width={buttonSize}
+									height={buttonSize}
+									icon="phone"
+									class="fill-white"
+								/></button
 							>
 						</div>
 					</div>
@@ -239,6 +271,6 @@
 
 <style lang="postcss">
 	.call-button {
-		@apply text-white p-6 rounded-full aspect-square flex justify-center items-center;
+		@apply p-4 rounded-full aspect-square flex justify-center items-center;
 	}
 </style>
