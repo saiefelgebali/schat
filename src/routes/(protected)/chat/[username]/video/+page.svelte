@@ -178,8 +178,8 @@
 <div>
 	<div class="container p-0  min-h-screen flex relative">
 		<!-- svelte-ignore a11y-media-has-caption -->
-		<FriendVideo bind:self={remoteVideo} />
 		<MyVideo bind:self={localVideo} />
+		<FriendVideo bind:self={remoteVideo} />
 
 		<div class="container absolute flex justify-center bottom-24 w-full">
 			<div class="max-w-md w-full">
