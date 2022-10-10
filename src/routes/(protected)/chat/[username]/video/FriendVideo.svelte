@@ -1,5 +1,5 @@
 <script lang="ts">
-	let self: HTMLVideoElement;
+	export let self: HTMLVideoElement | undefined = undefined;
 </script>
 
 <!-- svelte-ignore a11y-media-has-caption -->

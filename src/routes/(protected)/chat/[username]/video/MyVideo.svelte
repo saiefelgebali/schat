@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let self: HTMLVideoElement;
+	export let self: HTMLVideoElement | undefined = undefined;
 </script>
 
 <video
