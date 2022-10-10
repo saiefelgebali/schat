@@ -7,6 +7,11 @@
 
 <style>
 	video {
+		/* So that MyVideo stays on top */
+		transform: rotateY(360deg);
+		-webkit-transform: rotateY(360deg);
+		-moz-transform: rotateY(360deg);
+
 		max-height: 100vh;
 	}
 </style>

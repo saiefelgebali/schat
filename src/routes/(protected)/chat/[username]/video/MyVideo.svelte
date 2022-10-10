@@ -7,9 +7,9 @@
 <style>
 	video {
 		/* Flip video */
-		/* transform: rotateY(180deg);
-		-webkit-transform: rotateY(180deg); 
-		-moz-transform: rotateY(180deg);  */
+		transform: rotateY(180deg);
+		-webkit-transform: rotateY(180deg);
+		-moz-transform: rotateY(180deg);
 
 		width: 200px;
 		max-width: 30vw;
