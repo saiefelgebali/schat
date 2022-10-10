@@ -34,7 +34,7 @@
 				audio: true
 			});
 		} catch (e) {
-			// alert('Could not access the camera');
+			alert('Could not access the camera');
 			localStream = new MediaStream();
 		}
 
@@ -176,8 +176,8 @@
 <div class="bg-black">
 	<div class="container p-0  min-h-screen flex relative">
 		<!-- svelte-ignore a11y-media-has-caption -->
-		<FriendVideo self={remoteVideo} />
-		<MyVideo self={localVideo} />
+		<FriendVideo bind:self={remoteVideo} />
+		<MyVideo bind:self={localVideo} />
 
 		<div class="absolute flex justify-center bottom-24 w-full">
 			<div class="max-w-md w-full">
